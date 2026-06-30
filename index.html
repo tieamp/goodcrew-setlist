@@ -1192,15 +1192,34 @@ document.getElementById('textGenBtn').addEventListener('click', ()=>{
 
 document.getElementById('copyTextBtn').addEventListener('click', ()=>{
   const ta = document.getElementById('textOutput');
-  ta.select();
-  navigator.clipboard.writeText(ta.value).then(()=>{
-    const btn = document.getElementById('copyTextBtn');
+  const text = ta.value;
+  const btn = document.getElementById('copyTextBtn');
+
+  const showSuccess = () => {
     const original = btn.textContent;
     btn.textContent = '✓ コピーしました';
     setTimeout(()=> btn.textContent = original, 1500);
-  }).catch(()=>{
-    document.execCommand('copy');
-  });
+  };
+
+  // まずClipboard APIを試みる
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(showSuccess).catch(()=> fallbackCopy());
+  } else {
+    fallbackCopy();
+  }
+
+  function fallbackCopy(){
+    // iOS Safari対応: readonlyを一時解除してselect
+    ta.removeAttribute('readonly');
+    ta.setSelectionRange(0, ta.value.length);
+    ta.select();
+    try{
+      document.execCommand('copy');
+      showSuccess();
+    }catch(e){}
+    ta.setAttribute('readonly', true);
+    window.getSelection && window.getSelection().removeAllRanges();
+  }
 });
 
 renderAll();

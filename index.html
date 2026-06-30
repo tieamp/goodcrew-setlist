@@ -95,6 +95,21 @@
   .slot[draggable="true"]{cursor:grab;}
   .slot[draggable="true"]:active{cursor:grabbing; opacity:.7; transform:scale(1.01);}
   .slot.drag-over{border-color:var(--accent2); background:rgba(255,210,63,.08);}
+  .drag-handle{
+    display:none;
+    flex:0 0 auto;
+    cursor:grab;
+    color:var(--text-dim);
+    font-size:16px;
+    padding:2px 4px;
+    touch-action:none;
+    line-height:1;
+    user-select:none;
+  }
+  .drag-handle:active{ cursor:grabbing; color:var(--accent2); }
+  @media (max-width:600px){
+    .drag-handle{ display:flex; align-items:center; }
+  }
 
   .song-list{
     display:flex;flex-direction:column;gap:6px;
@@ -285,16 +300,6 @@
     .panel{ border:none; padding:0; }
     .layout{ padding:0; max-width:100%; }
     .setlist-doc{ border-radius:0; padding:0; }
-    /* 印刷時はさらに小さめフォントでPDFレンダラーのズレを吸収 */
-    table.doc-table th, table.doc-table td{
-      font-size:7.5px !important;
-      padding:2px 3px !important;
-    }
-    table.doc-table td.ttl{ font-size:7px !important; }
-    table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{
-      font-size:6.5px !important;
-    }
-    table.doc-head td{ font-size:9.5px !important; }
   }
 </style>
 </head>
@@ -365,7 +370,7 @@
     <div class="actions">
       <button class="btn secondary" id="addMcBtn">＋ MCを追加</button>
       <button class="btn secondary" id="resetBtn">リセット</button>
-      <button class="btn" id="genBtn">テンプレ出力</button>
+      <button class="btn" id="genBtn">PDF出力</button>
       <button class="btn secondary" id="printBtn" style="display:none;">🖨 印刷／PDF保存</button>
       <button class="btn secondary" id="downloadPrintBtn" style="display:none;">⬇ 印刷用HTMLを保存</button>
       <button class="btn" id="textGenBtn">テキスト出力</button>
@@ -598,6 +603,7 @@ function renderSetlist(){
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
       const label = item.type==='mc' ? 'MC' : item.t;
       slot.innerHTML = `
+        <span class="drag-handle" title="長押しして並び替え">⠿</span>
         <div class="idx">${i+1}</div>
         <div class="title">${label}</div>
         ${kikkakeHtml}
@@ -662,35 +668,38 @@ function renderSetlist(){
         renderAll();
       });
 
-      // タッチ操作での並び替え
-      slot.addEventListener('touchstart', (e)=>{
-        dragIndex = i;
-        slot.classList.add('drag-over');
-      }, {passive:true});
-      slot.addEventListener('touchmove', (e)=>{
-        e.preventDefault();
-        const touch = e.touches[0];
-        const el = document.elementFromPoint(touch.clientX, touch.clientY);
-        const target = el && el.closest('[data-i]');
-        document.querySelectorAll('.slot.drag-over').forEach(s=> s !== slot && s.classList.remove('drag-over'));
-        if(target && target !== slot) target.classList.add('drag-over');
-      }, {passive:false});
-      slot.addEventListener('touchend', (e)=>{
-        slot.classList.remove('drag-over');
-        const touch = e.changedTouches[0];
-        const el = document.elementFromPoint(touch.clientX, touch.clientY);
-        const target = el && el.closest('[data-i]');
-        document.querySelectorAll('.slot.drag-over').forEach(s=> s.classList.remove('drag-over'));
-        if(target && dragIndex !== null){
-          const dropIndex = +target.dataset.i;
-          if(dropIndex !== dragIndex){
-            const moved = setlist.splice(dragIndex,1)[0];
-            setlist.splice(dropIndex,0,moved);
+      // タッチ操作での並び替え（ハンドルボタン限定）
+      const handle = slot.querySelector('.drag-handle');
+      if(handle){
+        handle.addEventListener('touchstart', (e)=>{
+          dragIndex = i;
+          slot.classList.add('drag-over');
+        }, {passive:true});
+        handle.addEventListener('touchmove', (e)=>{
+          e.preventDefault();
+          const touch = e.touches[0];
+          const el = document.elementFromPoint(touch.clientX, touch.clientY);
+          const target = el && el.closest('.slot[data-i]');
+          document.querySelectorAll('.slot.drag-over').forEach(s=> s !== slot && s.classList.remove('drag-over'));
+          if(target && target !== slot) target.classList.add('drag-over');
+        }, {passive:false});
+        handle.addEventListener('touchend', (e)=>{
+          slot.classList.remove('drag-over');
+          const touch = e.changedTouches[0];
+          const el = document.elementFromPoint(touch.clientX, touch.clientY);
+          const target = el && el.closest('.slot[data-i]');
+          document.querySelectorAll('.slot.drag-over').forEach(s=> s.classList.remove('drag-over'));
+          if(target && dragIndex !== null){
+            const dropIndex = +target.dataset.i;
+            if(dropIndex !== dragIndex){
+              const moved = setlist.splice(dragIndex,1)[0];
+              setlist.splice(dropIndex,0,moved);
+            }
           }
-        }
-        dragIndex = null;
-        renderAll();
-      });
+          dragIndex = null;
+          renderAll();
+        });
+      }
       box.appendChild(slot);
     });
   }
@@ -1110,11 +1119,6 @@ document.getElementById('printBtn').addEventListener('click', ()=>{
       ${styles}
       <style>
         body{ margin:0; padding:8px; background:#fff; }
-        @page{ size:A4 portrait; margin:10mm; }
-        table.doc-table th, table.doc-table td{ font-size:7.5px !important; padding:2px 3px !important; }
-        table.doc-table td.ttl{ font-size:7px !important; }
-        table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{ font-size:6.5px !important; }
-        table.doc-head td{ font-size:9.5px !important; }
       </style>
     </head>
     <body>${content}
@@ -1145,11 +1149,6 @@ document.getElementById('downloadPrintBtn').addEventListener('click', ()=>{
 ${styles}
 <style>
   body{ margin:0; padding:8px; background:#fff; }
-  @page{ size:A4 portrait; margin:10mm; }
-  table.doc-table th, table.doc-table td{ font-size:7.5px !important; padding:2px 3px !important; }
-  table.doc-table td.ttl{ font-size:7px !important; }
-  table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{ font-size:6.5px !important; }
-  table.doc-head td{ font-size:9.5px !important; }
 </style>
 </head>
 <body>${content}

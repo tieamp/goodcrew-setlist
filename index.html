@@ -1172,7 +1172,16 @@ window.addEventListener('load', function(){ if(window.fitAndPrintReady) fitAndPr
 });
 
 document.getElementById('textGenBtn').addEventListener('click', ()=>{
+  const date = document.getElementById('eventDate').value;
+  const venue = document.getElementById('venueName').value.trim();
+  const eventName = document.getElementById('eventName').value.trim();
+
   let lines = [];
+  if(date) lines.push(date.replace(/-/g,'/'));
+  if(venue) lines.push(venue);
+  if(eventName) lines.push(eventName);
+  if(date || venue || eventName) lines.push('');
+
   if(useStartSE) lines.push(`登場SE　${toMMSS(SE_SEC)}`);
   setlist.forEach(item=>{
     if(item.type==='mc'){

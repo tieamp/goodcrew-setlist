@@ -1178,7 +1178,7 @@ document.getElementById('textGenBtn').addEventListener('click', ()=>{
 
   let lines = [];
   if(date){
-    const parts = date.split('-'); // YYYY-MM-DD
+    const parts = date.split('-');
     const m = parseInt(parts[1], 10);
     const d = parseInt(parts[2], 10);
     lines.push(`${m}/${d}`);
@@ -1187,14 +1187,22 @@ document.getElementById('textGenBtn').addEventListener('click', ()=>{
   if(eventName) lines.push(eventName);
   if(date || venue || eventName) lines.push('');
 
-  if(useStartSE) lines.push(`登場SE　${toMMSS(SE_SEC)}`);
+  if(useStartSE) lines.push(`SE　登場SE　${toMMSS(SE_SEC)}`);
+
+  const circledNums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮','⑯','⑰','⑱','⑲','⑳'];
+  let songNum = 1;
   setlist.forEach(item=>{
     if(item.type==='mc'){
+      lines.push(''); // MC前に空行
       lines.push(`MC　${toMMSS(item.time)}`);
+      lines.push(''); // MC後に空行
     } else {
-      lines.push(`${item.t}　${item.kikkake||'―'}`);
+      const num = songNum <= 20 ? circledNums[songNum-1] : songNum;
+      lines.push(`${num}　${item.t}　${item.kikkake||'―'}`);
+      songNum++;
     }
   });
+
   if(useExitMC) lines.push(`退場MC　${toMMSS(EXIT_MC_SEC)}`);
   const total = getActiveSESec() + setlist.reduce((a,b)=>a+b.time,0) + getActiveExitSec();
   lines.push('');
@@ -1202,6 +1210,13 @@ document.getElementById('textGenBtn').addEventListener('click', ()=>{
 
   document.getElementById('textOutput').value = lines.join('\n');
   document.getElementById('textOutputWrap').style.display = 'block';
+
+  // テキストエリアを全選択状態にする
+  const ta = document.getElementById('textOutput');
+  setTimeout(()=>{
+    ta.focus();
+    ta.setSelectionRange(0, ta.value.length);
+  }, 50);
 });
 
 document.getElementById('copyTextBtn').addEventListener('click', ()=>{
@@ -1214,11 +1229,10 @@ document.getElementById('copyTextBtn').addEventListener('click', ()=>{
     setTimeout(()=> btn.textContent = '📋 全選択してコピー', 1800);
   };
 
-  // テキストエリアを全選択（iOS対応）
+  // 全選択
   ta.focus();
   ta.setSelectionRange(0, text.length);
 
-  // Clipboard API → execCommand の順で試みる
   if(navigator.clipboard && window.isSecureContext){
     navigator.clipboard.writeText(text).then(showSuccess).catch(()=>{
       try{ document.execCommand('copy'); showSuccess(); }catch(e){}

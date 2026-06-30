@@ -482,8 +482,10 @@ function baseTitle(t){
 let setlist = []; // {type:'song'|'mc', t, time(sec), id}
 let mcCounter = 0;
 
-const SE_SEC = 60;
-const EXIT_MC_SEC = 30;
+let SE_SEC = 60;
+let EXIT_MC_SEC = 30;
+let seLocked = false;   // 手動設定時はtrue→逆算スキップ
+let exitLocked = false;
 
 function usedBaseTitles(){
   return new Set(setlist.filter(x=>x.type==='song').map(x=>baseTitle(x.t)));
@@ -544,26 +546,24 @@ function renderSongList(){
 let dragIndex = null;
 
 function autoAbsorbRemainder(){
-  const mcEntries = setlist.filter(x=>x.type==='mc');
-  if(mcEntries.length===0) return;
+  const allMc = setlist.filter(x=>x.type==='mc');
+  const freeMc = allMc.filter(x=>!x.locked); // 手動設定していないMCのみ
+  if(freeMc.length===0) return;
   const targetMin = +document.getElementById('targetMin').value || 0;
   const targetSec = targetMin*60;
 
-  // 曲だけの合計タイム(MCを除く)
   const songSec = setlist.filter(x=>x.type==='song').reduce((a,b)=>a+b.time,0);
-  // MCに使える合計時間 = 目標 - SE - 退場MC - 曲合計
-  const mcBudget = targetSec - getActiveSESec() - getActiveExitSec() - songSec;
+  const lockedMcSec = allMc.filter(x=>x.locked).reduce((a,b)=>a+b.time,0);
+  const mcBudget = targetSec - getActiveSESec() - getActiveExitSec() - songSec - lockedMcSec;
 
   if(mcBudget <= 0){
-    // 曲だけですでに超過 → MCは最小値(30秒)にする
-    mcEntries.forEach(mc=>{ mc.time = 30; });
+    freeMc.forEach(mc=>{ mc.time = 30; });
     return;
   }
 
-  // MCに使える時間を均等に分配（上限なし・目標時間から逆算）
-  const perMC = Math.floor(mcBudget / mcEntries.length);
-  const leftover = mcBudget - perMC * mcEntries.length;
-  mcEntries.forEach((mc,idx)=>{
+  const perMC = Math.floor(mcBudget / freeMc.length);
+  const leftover = mcBudget - perMC * freeMc.length;
+  freeMc.forEach((mc,idx)=>{
     mc.time = perMC + (idx < leftover ? 1 : 0);
   });
 }
@@ -579,18 +579,25 @@ function renderSetlist(){
   const box = document.getElementById('setlist');
   box.innerHTML = '';
 
-  // 固定：登場SE（任意で削除可）
+  // 固定：登場SE（任意で削除可・時間手動入力可）
   const seSlot = document.createElement('div');
   seSlot.className = 'slot fixed' + (useStartSE ? '' : ' optional-fixed disabled-fixed');
   seSlot.innerHTML = `
     <div class="idx">SE</div>
     <div class="title" style="${useStartSE?'':'text-decoration:line-through;color:var(--text-dim)'}">登場SE</div>
-    <div class="time" style="${useStartSE?'':'color:var(--text-dim)'}">${toMMSS(SE_SEC)}</div>
+    <input type="text" class="mc-time-input" id="seTimeInput" value="${toMMSS(SE_SEC)}" title="時間を手入力(例:1:00)" ${!useStartSE?'disabled':''}>
     <button class="toggle-fixed-btn${useStartSE?' active':''}" id="toggleSEBtn">${useStartSE?'使用中':'除外中'}</button>
   `;
   seSlot.querySelector('#toggleSEBtn').addEventListener('click', ()=>{
     useStartSE = !useStartSE;
     renderAll();
+  });
+  const seInput = seSlot.querySelector('#seTimeInput');
+  seInput.addEventListener('click', e=> e.stopPropagation());
+  seInput.addEventListener('change', (e)=>{
+    const m = e.target.value.trim().match(/^(\d+):(\d{2})$/);
+    if(m){ SE_SEC = +m[1]*60 + +m[2]; seLocked = true; renderAll(); }
+    else { e.target.value = toMMSS(SE_SEC); }
   });
   box.appendChild(seSlot);
 
@@ -617,7 +624,7 @@ function renderSetlist(){
       // MCは手動で時間を入力できるinputを表示
       const mcTimeHtml = item.type==='mc' ? `
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
-      const label = item.type==='mc' ? 'MC' : item.t;
+      const label = item.type==='mc' ? `MC${item.locked?'　🔒':''}` : item.t;
       slot.innerHTML = `
         <span class="drag-handle" title="長押しして並び替え">⠿</span>
         <div class="idx">${i+1}</div>
@@ -658,6 +665,7 @@ function renderSetlist(){
           const m = val.match(/^(\d+):(\d{2})$/);
           if(m){
             setlist[idx].time = +m[1]*60 + +m[2];
+            setlist[idx].locked = true; // 手動設定→逆算スキップ
             renderAll();
           } else {
             e.target.value = toMMSS(setlist[idx].time);
@@ -720,18 +728,25 @@ function renderSetlist(){
     });
   }
 
-  // 固定：退場MC（任意で削除可）
+  // 固定：退場MC（任意で削除可・時間手動入力可）
   const exitSlot = document.createElement('div');
   exitSlot.className = 'slot fixed' + (useExitMC ? '' : ' optional-fixed disabled-fixed');
   exitSlot.innerHTML = `
     <div class="idx">MC</div>
     <div class="title" style="${useExitMC?'':'text-decoration:line-through;color:var(--text-dim)'}">退場MC</div>
-    <div class="time" style="${useExitMC?'':'color:var(--text-dim)'}">${toMMSS(EXIT_MC_SEC)}</div>
+    <input type="text" class="mc-time-input" id="exitTimeInput" value="${toMMSS(EXIT_MC_SEC)}" title="時間を手入力(例:0:30)" ${!useExitMC?'disabled':''}>
     <button class="toggle-fixed-btn${useExitMC?' active':''}" id="toggleExitBtn">${useExitMC?'使用中':'除外中'}</button>
   `;
   exitSlot.querySelector('#toggleExitBtn').addEventListener('click', ()=>{
     useExitMC = !useExitMC;
     renderAll();
+  });
+  const exitInput = exitSlot.querySelector('#exitTimeInput');
+  exitInput.addEventListener('click', e=> e.stopPropagation());
+  exitInput.addEventListener('change', (e)=>{
+    const m = e.target.value.trim().match(/^(\d+):(\d{2})$/);
+    if(m){ EXIT_MC_SEC = +m[1]*60 + +m[2]; exitLocked = true; renderAll(); }
+    else { e.target.value = toMMSS(EXIT_MC_SEC); }
   });
   box.appendChild(exitSlot);
 

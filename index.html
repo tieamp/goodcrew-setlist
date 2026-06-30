@@ -379,9 +379,9 @@
     <div id="outputWrap" style="margin-top:14px;"></div>
 
     <div id="textOutputWrap" style="margin-top:14px;display:none;">
-      <textarea id="textOutput" readonly></textarea>
+      <textarea id="textOutput" style="-webkit-user-select:text;user-select:text;"></textarea>
       <div class="actions" style="margin-top:8px;">
-        <button class="btn secondary" id="copyTextBtn">📋 コピー</button>
+        <button class="btn secondary" id="copyTextBtn">📋 全選択してコピー</button>
       </div>
     </div>
   </div>
@@ -1206,33 +1206,25 @@ document.getElementById('textGenBtn').addEventListener('click', ()=>{
 
 document.getElementById('copyTextBtn').addEventListener('click', ()=>{
   const ta = document.getElementById('textOutput');
-  const text = ta.value;
   const btn = document.getElementById('copyTextBtn');
+  const text = ta.value;
 
   const showSuccess = () => {
-    const original = btn.textContent;
     btn.textContent = '✓ コピーしました';
-    setTimeout(()=> btn.textContent = original, 1500);
+    setTimeout(()=> btn.textContent = '📋 全選択してコピー', 1800);
   };
 
-  // まずClipboard APIを試みる
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(showSuccess).catch(()=> fallbackCopy());
-  } else {
-    fallbackCopy();
-  }
+  // テキストエリアを全選択（iOS対応）
+  ta.focus();
+  ta.setSelectionRange(0, text.length);
 
-  function fallbackCopy(){
-    // iOS Safari対応: readonlyを一時解除してselect
-    ta.removeAttribute('readonly');
-    ta.setSelectionRange(0, ta.value.length);
-    ta.select();
-    try{
-      document.execCommand('copy');
-      showSuccess();
-    }catch(e){}
-    ta.setAttribute('readonly', true);
-    window.getSelection && window.getSelection().removeAllRanges();
+  // Clipboard API → execCommand の順で試みる
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(showSuccess).catch(()=>{
+      try{ document.execCommand('copy'); showSuccess(); }catch(e){}
+    });
+  } else {
+    try{ document.execCommand('copy'); showSuccess(); }catch(e){}
   }
 });
 

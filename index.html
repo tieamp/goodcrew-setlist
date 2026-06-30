@@ -107,6 +107,11 @@
     user-select:none;
   }
   .drag-handle:active{ cursor:grabbing; color:var(--accent2); }
+  .lock-btn{
+    background:none;border:none;cursor:pointer;
+    font-size:14px;padding:1px 3px;flex:0 0 auto;opacity:.8;
+  }
+  .lock-btn:hover{ opacity:1; transform:scale(1.15); }
   @media (max-width:600px){
     .drag-handle{ display:flex; align-items:center; }
   }
@@ -624,7 +629,9 @@ function renderSetlist(){
       // MCは手動で時間を入力できるinputを表示
       const mcTimeHtml = item.type==='mc' ? `
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
-      const label = item.type==='mc' ? `MC${item.locked?'　🔒':''}` : item.t;
+      const label = item.type==='mc' ? 'MC' : item.t;
+      const lockBtnHtml = (item.type==='mc' && item.locked) ? `
+        <button class="lock-btn" data-i="${i}" title="タップで逆算に戻す">🔒</button>` : '';
       slot.innerHTML = `
         <span class="drag-handle" title="長押しして並び替え">⠿</span>
         <div class="idx">${i+1}</div>
@@ -632,14 +639,26 @@ function renderSetlist(){
         ${kikkakeHtml}
         ${remarkHtml}
         ${mcTimeHtml}
+        ${lockBtnHtml}
         <div class="time">${item.type==='song'?toMMSS(item.time):''}</div>
         <button data-i="${i}" title="削除">×</button>
       `;
-      slot.querySelector('button').addEventListener('click', (e)=>{
+      // 削除ボタン
+      slot.querySelector('button[title="削除"]').addEventListener('click', (e)=>{
         const idx = +e.target.dataset.i;
         setlist.splice(idx,1);
         renderAll();
       });
+      // ロック解除ボタン
+      const lockBtn = slot.querySelector('.lock-btn');
+      if(lockBtn){
+        lockBtn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          const idx = +e.target.dataset.i;
+          setlist[idx].locked = false;
+          renderAll();
+        });
+      }
       const sel = slot.querySelector('.kikkake-select');
       if(sel){
         sel.addEventListener('click', e=> e.stopPropagation());

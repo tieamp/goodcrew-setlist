@@ -93,8 +93,8 @@
   }
   .slot.fixed .idx{background:#5a4f72;}
   .slot[draggable="true"]{cursor:grab;}
-  .slot[draggable="true"]:active{cursor:grabbing;}
-  .slot.drag-over{border-color:var(--accent2);}
+  .slot[draggable="true"]:active{cursor:grabbing; opacity:.7; transform:scale(1.01);}
+  .slot.drag-over{border-color:var(--accent2); background:rgba(255,210,63,.08);}
 
   .song-list{
     display:flex;flex-direction:column;gap:6px;
@@ -211,22 +211,23 @@
   table.doc-table{width:100%;border-collapse:collapse;table-layout:fixed;}
   table.doc-table tr{height:28px;}
   table.doc-table th, table.doc-table td{
-    border:1px solid #999;padding:3px 5px;font-size:9.5px;text-align:left;
+    border:1px solid #999;padding:3px 4px;font-size:8.5px;text-align:left;
     vertical-align:middle;
     white-space:nowrap;overflow:hidden;text-overflow:clip;
-    max-width:0; /* table-layout:fixedと組み合わせてoverflow:hiddenを確実に効かせる */
+    max-width:0;
   }
-  table.doc-table th{background:#222;color:#fff;text-align:center;}
-  table.doc-table td.num, table.doc-table th:nth-child(1){text-align:center;width:26px;background:#f4f4f4;font-weight:700;}
-  table.doc-table th:nth-child(2), table.doc-table td.ttl{width:23%;font-weight:600;}
-  table.doc-table th:nth-child(3), table.doc-table td:nth-child(3){width:44px;}
-  table.doc-table th:nth-child(4), table.doc-table td:nth-child(4){width:42px;}
-  table.doc-table th:nth-child(5), table.doc-table td.onkyo{width:15%;}
-  table.doc-table th:nth-child(6), table.doc-table td.light{width:13%;}
-  table.doc-table th:nth-child(7), table.doc-table td.remark{width:auto;}
+  table.doc-table th{background:#222;color:#fff;text-align:center;font-size:8px;}
+  /* 列幅: タイトルを広めに確保 */
+  table.doc-table td.num, table.doc-table th:nth-child(1){text-align:center;width:16px;background:#f4f4f4;font-weight:700;}
+  table.doc-table th:nth-child(2), table.doc-table td.ttl{width:24%;font-weight:600;}
+  table.doc-table th:nth-child(3), table.doc-table td:nth-child(3){width:9%;text-align:center;}
+  table.doc-table th:nth-child(4), table.doc-table td:nth-child(4){width:8%;text-align:center;}
+  table.doc-table th:nth-child(5), table.doc-table td.onkyo{width:16%;}
+  table.doc-table th:nth-child(6), table.doc-table td.light{width:14%;}
+  table.doc-table th:nth-child(7), table.doc-table td.remark{width:18%;}
   /* 音響要望・照明要望・備考のみ折り返し許可 */
   table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{
-    white-space:normal;overflow:hidden;font-size:8.5px;line-height:1.3;
+    white-space:normal;overflow:hidden;font-size:7.5px;line-height:1.3;
   }
   .doc-total{
     margin-top:10px;text-align:right;font-size:14px;font-weight:800;
@@ -286,13 +287,14 @@
     .setlist-doc{ border-radius:0; padding:0; }
     /* 印刷時はさらに小さめフォントでPDFレンダラーのズレを吸収 */
     table.doc-table th, table.doc-table td{
-      font-size:8.5px !important;
-      padding:2px 4px !important;
-    }
-    table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{
       font-size:7.5px !important;
+      padding:2px 3px !important;
     }
-    table.doc-head td{ font-size:10px !important; }
+    table.doc-table td.ttl{ font-size:7px !important; }
+    table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{
+      font-size:6.5px !important;
+    }
+    table.doc-head td{ font-size:9.5px !important; }
   }
 </style>
 </head>
@@ -656,6 +658,36 @@ function renderSetlist(){
         if(dragIndex===null || dragIndex===dropIndex) return;
         const moved = setlist.splice(dragIndex,1)[0];
         setlist.splice(dropIndex,0,moved);
+        dragIndex = null;
+        renderAll();
+      });
+
+      // タッチ操作での並び替え
+      slot.addEventListener('touchstart', (e)=>{
+        dragIndex = i;
+        slot.classList.add('drag-over');
+      }, {passive:true});
+      slot.addEventListener('touchmove', (e)=>{
+        e.preventDefault();
+        const touch = e.touches[0];
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        const target = el && el.closest('[data-i]');
+        document.querySelectorAll('.slot.drag-over').forEach(s=> s !== slot && s.classList.remove('drag-over'));
+        if(target && target !== slot) target.classList.add('drag-over');
+      }, {passive:false});
+      slot.addEventListener('touchend', (e)=>{
+        slot.classList.remove('drag-over');
+        const touch = e.changedTouches[0];
+        const el = document.elementFromPoint(touch.clientX, touch.clientY);
+        const target = el && el.closest('[data-i]');
+        document.querySelectorAll('.slot.drag-over').forEach(s=> s.classList.remove('drag-over'));
+        if(target && dragIndex !== null){
+          const dropIndex = +target.dataset.i;
+          if(dropIndex !== dragIndex){
+            const moved = setlist.splice(dragIndex,1)[0];
+            setlist.splice(dropIndex,0,moved);
+          }
+        }
         dragIndex = null;
         renderAll();
       });
@@ -1079,9 +1111,10 @@ document.getElementById('printBtn').addEventListener('click', ()=>{
       <style>
         body{ margin:0; padding:8px; background:#fff; }
         @page{ size:A4 portrait; margin:10mm; }
-        table.doc-table th, table.doc-table td{ font-size:8.5px !important; padding:2px 4px !important; }
-        table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{ font-size:7.5px !important; }
-        table.doc-head td{ font-size:10px !important; }
+        table.doc-table th, table.doc-table td{ font-size:7.5px !important; padding:2px 3px !important; }
+        table.doc-table td.ttl{ font-size:7px !important; }
+        table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{ font-size:6.5px !important; }
+        table.doc-head td{ font-size:9.5px !important; }
       </style>
     </head>
     <body>${content}
@@ -1113,9 +1146,10 @@ ${styles}
 <style>
   body{ margin:0; padding:8px; background:#fff; }
   @page{ size:A4 portrait; margin:10mm; }
-  table.doc-table th, table.doc-table td{ font-size:8.5px !important; padding:2px 4px !important; }
-  table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{ font-size:7.5px !important; }
-  table.doc-head td{ font-size:10px !important; }
+  table.doc-table th, table.doc-table td{ font-size:7.5px !important; padding:2px 3px !important; }
+  table.doc-table td.ttl{ font-size:7px !important; }
+  table.doc-table td.onkyo, table.doc-table td.light, table.doc-table td.remark{ font-size:6.5px !important; }
+  table.doc-head td{ font-size:9.5px !important; }
 </style>
 </head>
 <body>${content}

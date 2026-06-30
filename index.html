@@ -293,13 +293,29 @@
 
   @media print{
     @page{ size:A4 portrait; margin:10mm; }
-    html, body{ margin:0; padding:0; }
+    html, body{
+      margin:0; padding:0;
+      height:auto !important;
+      overflow:hidden !important;
+    }
     header, .panel > h2, .controls, .actions, .song-list, .summary, #printBtn,
     .setlist, .panel:nth-of-type(2), #textOutputWrap{ display:none !important; }
     body{ background:#fff; }
     .panel{ border:none; padding:0; }
-    .layout{ padding:0; max-width:100%; }
-    .setlist-doc{ border-radius:0; padding:0; }
+    .layout{
+      padding:0; max-width:100%;
+      height:auto !important;
+      overflow:hidden !important;
+    }
+    .setlist-doc{
+      border-radius:0; padding:0;
+      page-break-after:avoid;
+      break-after:avoid;
+    }
+    .setlist-doc *{
+      page-break-inside:avoid;
+      break-inside:avoid;
+    }
   }
 </style>
 </head>
@@ -1118,7 +1134,8 @@ document.getElementById('printBtn').addEventListener('click', ()=>{
       <title>セットリスト</title>
       ${styles}
       <style>
-        body{ margin:0; padding:8px; background:#fff; }
+        body{ margin:0; padding:8px; background:#fff; height:auto !important; overflow:hidden !important; }
+        html{ height:auto !important; overflow:hidden !important; }
       </style>
     </head>
     <body>${content}
@@ -1148,7 +1165,8 @@ document.getElementById('downloadPrintBtn').addEventListener('click', ()=>{
 <title>セットリスト</title>
 ${styles}
 <style>
-  body{ margin:0; padding:8px; background:#fff; }
+  body{ margin:0; padding:8px; background:#fff; height:auto !important; overflow:hidden !important; }
+  html{ height:auto !important; overflow:hidden !important; }
 </style>
 </head>
 <body>${content}

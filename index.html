@@ -940,6 +940,25 @@ function autoFitTableText(){
   });
 }
 
+// 印刷用の別ウィンドウ／ダウンロードHTML内でも、実際の表示幅に合わせて
+// 文字サイズを再計算してからprint()するための埋め込み用スクリプト
+const AUTOFIT_SCRIPT = `
+function autoFitTableText(){
+  var cells = document.querySelectorAll('.doc-table td:not(.onkyo):not(.light):not(.remark), .doc-table th');
+  cells.forEach(function(cell){
+    cell.style.fontSize = '';
+    var size = parseFloat(getComputedStyle(cell).fontSize);
+    var guard = 0;
+    while(cell.scrollWidth > cell.clientWidth + 1 && size > 6 && guard < 30){
+      size -= 0.5;
+      cell.style.fontSize = size + 'px';
+      guard++;
+    }
+  });
+}
+window.fitAndPrintReady = function(){ autoFitTableText(); };
+`;
+
 document.getElementById('printBtn').addEventListener('click', ()=>{
   const content = document.getElementById('outputWrap').innerHTML;
   if(!content.trim()){ return; }
@@ -967,18 +986,20 @@ document.getElementById('printBtn').addEventListener('click', ()=>{
         @page{ size:A4 portrait; margin:12mm; }
       </style>
     </head>
-    <body>${content}</body>
+    <body>${content}
+    <script>${AUTOFIT_SCRIPT}<\/script>
+    </body>
     </html>
   `);
   win.document.close();
-  win.onload = () => {
+  const runAndPrint = () => {
+    try{ win.fitAndPrintReady && win.fitAndPrintReady(); }catch(e){}
     win.focus();
     win.print();
   };
+  win.onload = runAndPrint;
   // onloadが発火しないケースに備えた保険
-  setTimeout(()=>{
-    try{ win.focus(); win.print(); }catch(e){}
-  }, 600);
+  setTimeout(runAndPrint, 700);
 });
 
 document.getElementById('downloadPrintBtn').addEventListener('click', ()=>{
@@ -996,7 +1017,12 @@ ${styles}
   @page{ size:A4 portrait; margin:12mm; }
 </style>
 </head>
-<body>${content}</body>
+<body>${content}
+<script>
+${AUTOFIT_SCRIPT}
+window.addEventListener('load', function(){ if(window.fitAndPrintReady) fitAndPrintReady(); });
+<\/script>
+</body>
 </html>`;
   const blob = new Blob([fullHtml], {type:'text/html'});
   const url = URL.createObjectURL(blob);

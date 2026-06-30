@@ -227,8 +227,15 @@
   .doc-thanks{ font-size:16px; font-weight:800; text-align:center; }
   .doc-logo-img{ height:46px; width:auto; justify-self:end; }
 
+  .setlist-doc, .setlist-doc *{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    color-adjust:exact;
+  }
+
   @media print{
-    @page{ size:A4 portrait; margin:12mm; }
+    @page{ size:A4 portrait; margin:10mm; }
+    html, body{ margin:0; padding:0; }
     header, .panel > h2, .controls, .actions, .song-list, .summary, #printBtn,
     .setlist, .panel:nth-of-type(2), #textOutputWrap{ display:none !important; }
     body{ background:#fff; }

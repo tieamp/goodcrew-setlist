@@ -118,6 +118,19 @@
   .freq-dot{
     width:9px;height:9px;border-radius:50%;flex:0 0 auto;
   }
+  .mc-time-input{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    color:var(--accent2);font-size:11px;padding:2px 4px;width:52px;text-align:center;
+  }
+  .slot.optional-fixed{ opacity:.5; }
+  .slot.optional-fixed .idx{ background:#5a4f72; }
+  .slot.disabled-fixed .title{ text-decoration:line-through; color:var(--text-dim); }
+  .toggle-fixed-btn{
+    background:none;border:1px solid var(--line);color:var(--text-dim);
+    border-radius:6px;font-size:10px;padding:2px 6px;cursor:pointer;flex:0 0 auto;
+  }
+  .toggle-fixed-btn.active{ border-color:var(--accent);color:var(--accent); }
+
   .song-main{flex:1;min-width:0;}
   .song-title{font-size:13.5px;font-weight:600;}
   .song-meta{font-size:11px;color:var(--text-dim);margin-top:2px;}
@@ -233,6 +246,34 @@
     color-adjust:exact;
   }
 
+  /* ===== スマホ対応 ===== */
+  @media (max-width:600px){
+    header{ padding:16px 14px 12px; }
+    header h1{ font-size:17px; }
+    .layout{ padding:10px; gap:12px; }
+    .panel{ padding:12px; border-radius:10px; }
+    .panel h2{ font-size:13px; }
+    .controls{ gap:8px; }
+    .controls label{ font-size:11px; }
+    .controls input{ font-size:12px; padding:6px 8px; width:90px; }
+    .song-list{ max-height:400px; }
+    .song-row{ padding:8px 10px; gap:8px; }
+    .song-title{ font-size:13px; }
+    .group-header{ font-size:11px; }
+    .slot{ padding:8px 9px; gap:7px; flex-wrap:wrap; }
+    .slot .title{ font-size:12.5px; min-width:0; flex:1 1 120px; }
+    .slot .idx{ width:20px; height:20px; font-size:10px; flex-shrink:0; }
+    .slot .time{ font-size:11px; }
+    .kikkake-select{ font-size:11px; padding:3px 2px; }
+    .remark-input{ width:80px; font-size:10px; }
+    .summary{ font-size:12px; }
+    .summary .total{ font-size:16px; }
+    .actions{ gap:6px; }
+    button.btn{ padding:8px 10px; font-size:12px; }
+    .slot button{ font-size:14px; padding:2px 6px; }
+    .mc-time-input{ width:60px !important; }
+  }
+
   @media print{
     @page{ size:A4 portrait; margin:10mm; }
     html, body{ margin:0; padding:0; }
@@ -315,7 +356,7 @@
       <button class="btn" id="genBtn">テンプレ出力</button>
       <button class="btn secondary" id="printBtn" style="display:none;">🖨 印刷／PDF保存</button>
       <button class="btn secondary" id="downloadPrintBtn" style="display:none;">⬇ 印刷用HTMLを保存</button>
-      <button class="btn secondary" id="textGenBtn">テキスト出力</button>
+      <button class="btn" id="textGenBtn">テキスト出力</button>
     </div>
 
     <div id="outputWrap" style="margin-top:14px;"></div>
@@ -474,36 +515,56 @@ function autoAbsorbRemainder(){
   if(mcEntries.length===0) return;
   const targetMin = +document.getElementById('targetMin').value || 0;
   const targetSec = targetMin*60;
-  const total = SE_SEC + setlist.reduce((a,b)=>a+b.time,0) + EXIT_MC_SEC;
-  const remain = targetSec - total;
-  if(remain > 0 && remain < 90){
-    const per = Math.floor(remain / mcEntries.length);
-    const leftover = remain - per*mcEntries.length;
-    mcEntries.forEach((mc,idx)=>{
-      mc.time += per + (idx < leftover ? 1 : 0);
-    });
+
+  // 曲だけの合計タイム(MCを除く)
+  const songSec = setlist.filter(x=>x.type==='song').reduce((a,b)=>a+b.time,0);
+  // MCに使える合計時間 = 目標 - SE - 退場MC - 曲合計
+  const mcBudget = targetSec - getActiveSESec() - getActiveExitSec() - songSec;
+
+  if(mcBudget <= 0){
+    // 曲だけですでに超過 → MCは最小値(30秒)にする
+    mcEntries.forEach(mc=>{ mc.time = 30; });
+    return;
   }
+
+  // MCに使える時間を均等に分配（上限なし・目標時間から逆算）
+  const perMC = Math.floor(mcBudget / mcEntries.length);
+  const leftover = mcBudget - perMC * mcEntries.length;
+  mcEntries.forEach((mc,idx)=>{
+    mc.time = perMC + (idx < leftover ? 1 : 0);
+  });
 }
+
+let useStartSE = true;
+let useExitMC = true;
+
+function getActiveSESec(){ return useStartSE ? SE_SEC : 0; }
+function getActiveExitSec(){ return useExitMC ? EXIT_MC_SEC : 0; }
 
 function renderSetlist(){
   autoAbsorbRemainder();
   const box = document.getElementById('setlist');
   box.innerHTML = '';
 
-  // 固定：登場SE
+  // 固定：登場SE（任意で削除可）
   const seSlot = document.createElement('div');
-  seSlot.className = 'slot fixed';
+  seSlot.className = 'slot fixed' + (useStartSE ? '' : ' optional-fixed disabled-fixed');
   seSlot.innerHTML = `
     <div class="idx">SE</div>
-    <div class="title">登場SE</div>
-    <div class="time">${toMMSS(SE_SEC)}</div>
+    <div class="title" style="${useStartSE?'':'text-decoration:line-through;color:var(--text-dim)'}">登場SE</div>
+    <div class="time" style="${useStartSE?'':'color:var(--text-dim)'}">${toMMSS(SE_SEC)}</div>
+    <button class="toggle-fixed-btn${useStartSE?' active':''}" id="toggleSEBtn">${useStartSE?'使用中':'除外中'}</button>
   `;
+  seSlot.querySelector('#toggleSEBtn').addEventListener('click', ()=>{
+    useStartSE = !useStartSE;
+    renderAll();
+  });
   box.appendChild(seSlot);
 
   if(setlist.length===0){
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.textContent = '出演時間を入力して自動生成するか、左の楽曲をクリックして追加してください';
+    empty.textContent = '出演時間を入力して自動生成するか、下の楽曲をクリックして追加してください';
     box.appendChild(empty);
   } else {
     setlist.forEach((item, i)=>{
@@ -511,7 +572,6 @@ function renderSetlist(){
       slot.className = 'slot' + (item.type==='mc' ? ' mc' : '');
       slot.draggable = true;
       slot.dataset.i = i;
-      const label = item.type==='mc' ? `MC（${toMMSS(item.time)}）` : item.t;
       const kikkakeHtml = item.type==='song' ? `
         <select class="kikkake-select" data-i="${i}">
           <option value="音先" ${item.kikkake==='音先'?'selected':''}>音先</option>
@@ -521,12 +581,17 @@ function renderSetlist(){
         </select>` : '';
       const remarkHtml = item.type==='song' ? `
         <input type="text" class="remark-input" data-i="${i}" placeholder="備考" value="${(item.remark||'').replace(/"/g,'&quot;')}">` : '';
+      // MCは手動で時間を入力できるinputを表示
+      const mcTimeHtml = item.type==='mc' ? `
+        <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
+      const label = item.type==='mc' ? 'MC' : item.t;
       slot.innerHTML = `
         <div class="idx">${i+1}</div>
         <div class="title">${label}</div>
         ${kikkakeHtml}
         ${remarkHtml}
-        <div class="time">${toMMSS(item.time)}</div>
+        ${mcTimeHtml}
+        <div class="time">${item.type==='song'?toMMSS(item.time):''}</div>
         <button data-i="${i}" title="削除">×</button>
       `;
       slot.querySelector('button').addEventListener('click', (e)=>{
@@ -548,6 +613,21 @@ function renderSetlist(){
         remarkInput.addEventListener('input', (e)=>{
           const idx = +e.target.dataset.i;
           setlist[idx].remark = e.target.value;
+        });
+      }
+      const mcInput = slot.querySelector('.mc-time-input');
+      if(mcInput){
+        mcInput.addEventListener('click', e=> e.stopPropagation());
+        mcInput.addEventListener('change', (e)=>{
+          const idx = +e.target.dataset.i;
+          const val = e.target.value.trim();
+          const m = val.match(/^(\d+):(\d{2})$/);
+          if(m){
+            setlist[idx].time = +m[1]*60 + +m[2];
+            renderAll();
+          } else {
+            e.target.value = toMMSS(setlist[idx].time);
+          }
         });
       }
       slot.addEventListener('dragstart', (e)=>{
@@ -573,14 +653,19 @@ function renderSetlist(){
     });
   }
 
-  // 固定：退場MC
+  // 固定：退場MC（任意で削除可）
   const exitSlot = document.createElement('div');
-  exitSlot.className = 'slot fixed';
+  exitSlot.className = 'slot fixed' + (useExitMC ? '' : ' optional-fixed disabled-fixed');
   exitSlot.innerHTML = `
     <div class="idx">MC</div>
-    <div class="title">退場MC</div>
-    <div class="time">${toMMSS(EXIT_MC_SEC)}</div>
+    <div class="title" style="${useExitMC?'':'text-decoration:line-through;color:var(--text-dim)'}">退場MC</div>
+    <div class="time" style="${useExitMC?'':'color:var(--text-dim)'}">${toMMSS(EXIT_MC_SEC)}</div>
+    <button class="toggle-fixed-btn${useExitMC?' active':''}" id="toggleExitBtn">${useExitMC?'使用中':'除外中'}</button>
   `;
+  exitSlot.querySelector('#toggleExitBtn').addEventListener('click', ()=>{
+    useExitMC = !useExitMC;
+    renderAll();
+  });
   box.appendChild(exitSlot);
 
   updateSummary();
@@ -592,7 +677,7 @@ function updateSummary(){
   document.getElementById('targetDisp').textContent = toMMSS(targetSec);
 
   const songsAndMcSec = setlist.reduce((a,b)=>a+b.time,0);
-  const total = SE_SEC + songsAndMcSec + EXIT_MC_SEC;
+  const total = getActiveSESec() + songsAndMcSec + getActiveExitSec();
   document.getElementById('totalTime').textContent = toMMSS(total);
 
   const remain = targetSec - total;
@@ -631,8 +716,8 @@ function autoGenerate(){
   const targetMin = +document.getElementById('targetMin').value || 0;
   const targetSec = targetMin*60;
   const mcCount = Math.max(0, Math.floor(+document.getElementById('mcCount').value || 0));
-  const MC_MIN = 60, MC_MAX = 180;
-  const budget = targetSec - SE_SEC - EXIT_MC_SEC;
+  const MC_MIN = 60;
+  const budget = targetSec - getActiveSESec() - getActiveExitSec();
   const reserve = mcCount * MC_MIN;
 
   const pool = buildCandidatePool();
@@ -654,17 +739,13 @@ function autoGenerate(){
   setlist = [];
 
   if(mcCount > 0 && selected.length > 0){
-    // MC時間をバランスよく均等割り（最小60秒は確保）
-    let mcTimes = [];
-    let rem = remaining;
-    for(let i=0;i<mcCount;i++){
-      const slotsLeft = mcCount - i;
-      let t = Math.floor(rem / slotsLeft);
-      t = Math.max(MC_MIN, Math.min(MC_MAX, t));
-      if(t > rem - MC_MIN*(slotsLeft-1)) t = Math.max(MC_MIN, rem - MC_MIN*(slotsLeft-1));
-      mcTimes.push(t);
-      rem -= t;
-    }
+    // MC合計時間 = budget - 曲合計。均等に割り振る
+    const mcTotal = Math.max(0, budget - runningSec);
+    const perMC = Math.floor(mcTotal / mcCount);
+    const leftover = mcTotal - perMC * mcCount;
+    const mcTimes = Array.from({length:mcCount}, (_,i)=>
+      perMC + (i < leftover ? 1 : 0)
+    );
     // 曲をmcCount+1個のセグメントに均等配置
     const segments = mcCount + 1;
     const base = Math.floor(selected.length / segments);
@@ -822,8 +903,9 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
   const generalRequest = document.getElementById('generalRequest').value.trim();
 
   let rows = '';
-  // SE行
-  rows += `
+  // SE行（使用中の場合のみ出力）
+  if(useStartSE){
+    rows += `
     <tr>
       <td class="num">SE</td>
       <td class="ttl">【 SE 】</td>
@@ -833,6 +915,7 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
       <td>クール→ポップ</td>
       <td></td>
     </tr>`;
+  }
 
   let n = 1;
   setlist.forEach(item=>{
@@ -861,8 +944,9 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     }
     n++;
   });
-  // 退場MC行
-  rows += `
+  // 退場MC行（使用中の場合のみ出力）
+  if(useExitMC){
+    rows += `
     <tr>
       <td class="num">${n}</td>
       <td class="ttl">【退場MC】</td>
@@ -872,8 +956,9 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
       <td></td>
       <td></td>
     </tr>`;
+  }
 
-  const total = SE_SEC + setlist.reduce((a,b)=>a+b.time,0) + EXIT_MC_SEC;
+  const total = getActiveSESec() + setlist.reduce((a,b)=>a+b.time,0) + getActiveExitSec();
 
   const html = `
   <div class="setlist-doc">
@@ -1039,7 +1124,7 @@ window.addEventListener('load', function(){ if(window.fitAndPrintReady) fitAndPr
 
 document.getElementById('textGenBtn').addEventListener('click', ()=>{
   let lines = [];
-  lines.push(`登場SE　${toMMSS(SE_SEC)}`);
+  if(useStartSE) lines.push(`登場SE　${toMMSS(SE_SEC)}`);
   setlist.forEach(item=>{
     if(item.type==='mc'){
       lines.push(`MC　${toMMSS(item.time)}`);
@@ -1047,8 +1132,8 @@ document.getElementById('textGenBtn').addEventListener('click', ()=>{
       lines.push(`${item.t}　${item.kikkake||'―'}`);
     }
   });
-  lines.push(`退場MC　${toMMSS(EXIT_MC_SEC)}`);
-  const total = SE_SEC + setlist.reduce((a,b)=>a+b.time,0) + EXIT_MC_SEC;
+  if(useExitMC) lines.push(`退場MC　${toMMSS(EXIT_MC_SEC)}`);
+  const total = getActiveSESec() + setlist.reduce((a,b)=>a+b.time,0) + getActiveExitSec();
   lines.push('');
   lines.push(`合計タイム　${toMMSS(total)}`);
 

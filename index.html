@@ -426,12 +426,15 @@
     <div class="actions">
       <button class="btn secondary" id="addMcBtn">＋ MCを追加</button>
       <button class="btn secondary" id="addCustomBtn">＋ カスタム曲を追加</button>
+      <button class="btn secondary" id="saveBtn">💾 一時保存</button>
+      <button class="btn secondary" id="loadBtn">📂 読み込み</button>
       <button class="btn secondary" id="resetBtn">リセット</button>
       <button class="btn" id="genBtn">PDF出力</button>
       <button class="btn secondary" id="printBtn" style="display:none;">🖨 印刷／PDF保存</button>
       <button class="btn secondary" id="downloadPrintBtn" style="display:none;">⬇ 印刷用HTMLを保存</button>
       <button class="btn" id="textGenBtn">テキスト出力</button>
     </div>
+    <div id="saveMsg" style="font-size:11px;color:var(--green);margin-top:6px;display:none;"></div>
 
     <div id="outputWrap" style="margin-top:14px;"></div>
 
@@ -722,7 +725,7 @@ function renderSetlist(){
         slot.querySelector('.remark-input').addEventListener('input', (e)=>{
           setlist[+e.target.dataset.i].remark = e.target.value;
         });
-        // ドラッグ
+        // ドラッグ（PC）
         slot.addEventListener('dragstart', (e)=>{ dragIndex = i; e.dataTransfer.effectAllowed='move'; });
         slot.addEventListener('dragover', (e)=>{ e.preventDefault(); slot.classList.add('drag-over'); });
         slot.addEventListener('dragleave', ()=> slot.classList.remove('drag-over'));
@@ -732,6 +735,31 @@ function renderSetlist(){
           if(dragIndex===null||dragIndex===di) return;
           const moved = setlist.splice(dragIndex,1)[0]; setlist.splice(di,0,moved); dragIndex=null; renderAll();
         });
+        // タッチ並び替え（スマホ）
+        const customHandle = slot.querySelector('.drag-handle');
+        if(customHandle){
+          customHandle.addEventListener('touchstart', ()=>{ dragIndex = i; slot.classList.add('drag-over'); }, {passive:true});
+          customHandle.addEventListener('touchmove', (e)=>{
+            e.preventDefault();
+            const touch = e.touches[0];
+            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+            const target = el && el.closest('.slot[data-i]');
+            document.querySelectorAll('.slot.drag-over').forEach(s=> s!==slot && s.classList.remove('drag-over'));
+            if(target && target!==slot) target.classList.add('drag-over');
+          }, {passive:false});
+          customHandle.addEventListener('touchend', (e)=>{
+            slot.classList.remove('drag-over');
+            const touch = e.changedTouches[0];
+            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+            const target = el && el.closest('.slot[data-i]');
+            document.querySelectorAll('.slot.drag-over').forEach(s=> s.classList.remove('drag-over'));
+            if(target && dragIndex!==null){
+              const di = +target.dataset.i;
+              if(di!==dragIndex){ const moved=setlist.splice(dragIndex,1)[0]; setlist.splice(di,0,moved); }
+            }
+            dragIndex=null; renderAll();
+          });
+        }
         box.appendChild(slot);
         return;
       }
@@ -1176,6 +1204,61 @@ document.getElementById('addMcBtn').addEventListener('click', ()=>{
 document.getElementById('addCustomBtn').addEventListener('click', ()=>{
   setlist.push({type:'custom', t:'', time:0, kikkake:'音先', remark:'', light:'', onkyo:'', id:Date.now()+Math.random()});
   renderAll();
+});
+
+function showSaveMsg(msg){
+  const el = document.getElementById('saveMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(()=> el.style.display='none', 2500);
+}
+
+document.getElementById('saveBtn').addEventListener('click', ()=>{
+  const data = {
+    setlist,
+    useStartSE, useExitMC, SE_SEC, EXIT_MC_SEC,
+    date: document.getElementById('eventDate').value,
+    venue: document.getElementById('venueName').value,
+    eventName: document.getElementById('eventName').value,
+    targetMin: document.getElementById('targetMin').value,
+    mcCount: document.getElementById('mcCount').value,
+    micCount: document.getElementById('micCount').value,
+    onkyoMethod: document.getElementById('onkyoMethod').value,
+    outputJack: document.getElementById('outputJack').value,
+    generalRequest: document.getElementById('generalRequest').value,
+  };
+  try{
+    localStorage.setItem('goodcrew_setlist_save', JSON.stringify(data));
+    showSaveMsg('✓ 一時保存しました');
+  }catch(e){
+    showSaveMsg('⚠ 保存に失敗しました');
+  }
+});
+
+document.getElementById('loadBtn').addEventListener('click', ()=>{
+  try{
+    const raw = localStorage.getItem('goodcrew_setlist_save');
+    if(!raw){ showSaveMsg('⚠ 保存データが見つかりません'); return; }
+    const data = JSON.parse(raw);
+    setlist = data.setlist || [];
+    useStartSE = data.useStartSE ?? true;
+    useExitMC = data.useExitMC ?? true;
+    SE_SEC = data.SE_SEC ?? 60;
+    EXIT_MC_SEC = data.EXIT_MC_SEC ?? 30;
+    if(data.date) document.getElementById('eventDate').value = data.date;
+    if(data.venue) document.getElementById('venueName').value = data.venue;
+    if(data.eventName) document.getElementById('eventName').value = data.eventName;
+    if(data.targetMin) document.getElementById('targetMin').value = data.targetMin;
+    if(data.mcCount) document.getElementById('mcCount').value = data.mcCount;
+    if(data.micCount) document.getElementById('micCount').value = data.micCount;
+    if(data.onkyoMethod) document.getElementById('onkyoMethod').value = data.onkyoMethod;
+    if(data.outputJack) document.getElementById('outputJack').value = data.outputJack;
+    if(data.generalRequest) document.getElementById('generalRequest').value = data.generalRequest;
+    renderAll();
+    showSaveMsg('✓ 読み込みました');
+  }catch(e){
+    showSaveMsg('⚠ 読み込みに失敗しました');
+  }
 });
 
 document.getElementById('resetBtn').addEventListener('click', ()=>{

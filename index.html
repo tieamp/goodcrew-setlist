@@ -606,10 +606,10 @@ function autoAbsorbRemainder(){
     return;
   }
 
-  const perMC = Math.floor(mcBudget / freeMc.length);
-  const leftover = mcBudget - perMC * freeMc.length;
-  freeMc.forEach((mc,idx)=>{
-    mc.time = perMC + (idx < leftover ? 1 : 0);
+  const perMCRaw = Math.floor(mcBudget / freeMc.length);
+  const perMC = Math.min(150, Math.max(60, perMCRaw));
+  freeMc.forEach(mc=>{
+    mc.time = perMC;
   });
 }
 
@@ -831,7 +831,7 @@ function updateSummary(){
   }
 }
 
-// ベース名ごとに優先採用バリエーションを選ぶ（NEW AGE等はイントロ/ドラムループ優先）
+// ベース名ごとに候補を組み立てる（通常版・PRIORITY版＋ショート版も含める）
 function buildCandidatePool(){
   const groups = {};
   DB.forEach(song=>{
@@ -839,21 +839,32 @@ function buildCandidatePool(){
     if(!groups[base]) groups[base] = [];
     groups[base].push(song);
   });
+
   const pool = [];
   Object.keys(groups).forEach(base=>{
     const variants = groups[base];
-    let chosen;
+    // 通常版（またはPRIORITY版）を選ぶ
+    let primary;
     if(PRIORITY_BASE.includes(base)){
-      chosen = variants.find(v=>v.t.startsWith('イントロ/')||v.t.startsWith('ドラムループ/')) || variants[0];
+      primary = variants.find(v=>v.t.startsWith('イントロ/')||v.t.startsWith('ドラムループ/')) || variants[0];
     } else {
-      chosen = variants.find(v=>!v.t.includes('【ショート】') && !v.t.startsWith('イントロ/') && !v.t.startsWith('ドラムループ/')) || variants[0];
+      primary = variants.find(v=>!v.t.includes('【ショート】') && !v.t.startsWith('イントロ/') && !v.t.startsWith('ドラムループ/')) || variants[0];
     }
-    pool.push(chosen);
+    pool.push({...primary, _base: base});
+
+    // ショート版があれば別エントリとして追加（同一baseとしてマーク）
+    const shorts = variants.filter(v=>
+      v !== primary &&
+      v.t.includes('【ショート】') &&
+      !v.t.startsWith('イントロ/') &&
+      !v.t.startsWith('ドラムループ/')
+    );
+    shorts.forEach(s=> pool.push({...s, _base: base}));
   });
-  // メイン曲は全曲同一確率でシャッフル、変化球曲は7%の確率で採用候補に入れる
-  // 確率0%曲（ZERO_PROB_BASE）は除外
-  const mainPool = pool.filter(s => isMain(s) && !ZERO_PROB_BASE.has(baseTitle(s.t)));
-  const henkyokuPool = pool.filter(s => isHenkyoku(s) && !ZERO_PROB_BASE.has(baseTitle(s.t)));
+
+  // 確率フィルタ
+  const mainPool = pool.filter(s => isMain(s) && !ZERO_PROB_BASE.has(s._base));
+  const henkyokuPool = pool.filter(s => isHenkyoku(s) && !ZERO_PROB_BASE.has(s._base));
 
   // メイン曲はランダムシャッフル（均等確率）
   for(let i = mainPool.length-1; i > 0; i--){
@@ -871,43 +882,47 @@ function autoGenerate(){
   const targetMin = +document.getElementById('targetMin').value || 0;
   const targetSec = targetMin*60;
   const mcCount = Math.max(0, Math.floor(+document.getElementById('mcCount').value || 0));
-  const MC_MIN = 60;
+  const MC_TARGET = 120; // MCの目標時間(秒) = 約2分
+  const MC_MIN = 60;    // 最短1分
+  const MC_MAX = 150;   // 最長2分30秒
   const budget = targetSec - getActiveSESec() - getActiveExitSec();
-  const reserve = mcCount * MC_MIN;
+  const reserve = mcCount * MC_TARGET; // MC分を約2分で確保
 
   const pool = buildCandidatePool();
   const selected = [];
+  const usedBases = new Set(); // 同一曲の重複防止
   let runningSec = 0;
 
   pool.forEach(song=>{
+    const base = song._base || baseTitle(song.t);
+    if(usedBases.has(base)) return; // 同一曲の別バリエーションはスキップ
     if(selected.length===0 && (song.t.startsWith('イントロ/')||song.t.startsWith('ドラムループ/'))){
       return;
     }
     const sec = toSec(song.time);
     if(runningSec + sec <= budget - reserve){
       selected.push({type:'song', t:song.t, time:sec, light:song.light||'', onkyo:song.onkyo||'', kikkake:'音先', remark:'', id:Date.now()+Math.random()});
+      usedBases.add(base);
       runningSec += sec;
     }
   });
 
-  let remaining = budget - runningSec;
+  // MC時間を60〜150秒の範囲に収める
+  const mcTotal = Math.max(0, budget - runningSec);
+  const perMCRaw = mcCount > 0 ? Math.floor(mcTotal / mcCount) : 0;
+  const perMC = Math.min(MC_MAX, Math.max(MC_MIN, perMCRaw));
+
   setlist = [];
 
   if(mcCount > 0 && selected.length > 0){
-    // MC合計時間 = budget - 曲合計。均等に割り振る
-    const mcTotal = Math.max(0, budget - runningSec);
-    const perMC = Math.floor(mcTotal / mcCount);
-    const leftover = mcTotal - perMC * mcCount;
-    const mcTimes = Array.from({length:mcCount}, (_,i)=>
-      perMC + (i < leftover ? 1 : 0)
-    );
+    const mcTimes = Array.from({length:mcCount}, ()=> perMC);
     // 曲をmcCount+1個のセグメントに均等配置
     const segments = mcCount + 1;
-    const base = Math.floor(selected.length / segments);
+    const base2 = Math.floor(selected.length / segments);
     let extra = selected.length % segments;
     let songIdx = 0;
     for(let seg=0; seg<segments; seg++){
-      let count = base + (seg < extra ? 1 : 0);
+      let count = base2 + (seg < extra ? 1 : 0);
       for(let k=0;k<count;k++){
         setlist.push(selected[songIdx++]);
       }

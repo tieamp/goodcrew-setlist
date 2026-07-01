@@ -20,7 +20,7 @@
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:linear-gradient(180deg,#15121c,#1a1424 60%, #15121c);
+    background:#1a1626;
     color:var(--text);
     font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
     min-height:100vh;
@@ -48,10 +48,19 @@
   }
 
   .panel{
-    background:var(--panel);
-    border:1px solid var(--line);
+    background:#1a1528;
+    border:2px solid var(--line);
     border-radius:14px;
     padding:16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,.4);
+  }
+  .panel.panel-setlist{
+    border-color:#ff4f8b;
+    box-shadow: 0 2px 20px rgba(255,79,139,.15);
+  }
+  .panel.panel-songlist{
+    border-color:#7b6fa0;
+    box-shadow: 0 2px 20px rgba(123,111,160,.15);
   }
   .panel h2{
     margin:0 0 12px;
@@ -59,6 +68,8 @@
     color:var(--accent2);
     letter-spacing:.05em;
     display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--line);
   }
 
   .controls{
@@ -334,8 +345,7 @@
 <div class="layout">
 
   <!-- 上：セトリ構築 -->
-  <div class="panel">
-    <h2>公演情報</h2>
+  <div class="panel panel-setlist">
     <div class="controls">
       <label>日付
         <input type="date" id="eventDate">
@@ -408,12 +418,11 @@
   </div>
 
   <!-- 下：楽曲一覧 -->
-  <div class="panel">
+  <div class="panel panel-songlist">
     <h2>楽曲一覧<span id="songCount" style="color:var(--text-dim);font-weight:400;"></span></h2>
     <div class="legend">
-      <span><span class="dot" style="background:#ff4f8b"></span>使用頻度 高</span>
-      <span><span class="dot" style="background:#ffd23f"></span>使用頻度 中</span>
-      <span><span class="dot" style="background:#5a4f72"></span>使用頻度 低</span>
+      <span><span class="dot" style="background:#ff4f8b"></span>メイン曲</span>
+      <span><span class="dot" style="background:#7b6fa0"></span>変化球曲</span>
     </div>
     <div class="song-list" id="songList"></div>
   </div>
@@ -470,6 +479,24 @@ const DB = [
 // イントロ/ドラムループ系を優先表示したい3曲のベース名
 const PRIORITY_BASE = ["NEW AGE","触発エマージェンシー！","Because it!!"];
 
+// 変化球曲として扱う基底タイトル（全バリエーションに適用）
+const HENKYOKU_BASE = new Set(["NEW AGE","Because it!!","Raise the Sail","URAMESHIYA"]);
+
+// 自動生成で採用確率0%（手動のみで使用可能）な曲の基底タイトル
+const ZERO_PROB_BASE = new Set(["BRAVE","ESCAPE!","夢見がち Sound & Beat","Bye Bye Little Girl","フロントクラクション","ストレリチア"]);
+
+// 変化球曲の採用確率（7%）
+const HENKYOKU_PROB = 0.07;
+
+function isHenkyoku(song){
+  return HENKYOKU_BASE.has(baseTitle(song.t));
+}
+
+function isMain(song){
+  // freqが3以上かつ変化球でない → メイン曲
+  return song.freq >= 3 && !isHenkyoku(song);
+}
+
 function toSec(str){
   const [m,s] = str.split(":").map(Number);
   return m*60+s;
@@ -502,7 +529,7 @@ function renderSongList(){
   document.getElementById('songCount').textContent = ` (${DB.length}曲)`;
   const used = usedBaseTitles();
 
-  // 基底タイトルごとにグループ化、グループ内最大頻度の降順で並べる
+  // 基底タイトルごとにグループ化
   const groups = {};
   DB.forEach(song=>{
     const base = baseTitle(song.t);
@@ -515,37 +542,50 @@ function renderSongList(){
     return maxB - maxA;
   });
 
-  baseOrder.forEach(base=>{
-    const variants = groups[base];
-    const groupEl = document.createElement('div');
-    groupEl.className = 'song-group';
-    const isUsed = used.has(base);
-    groupEl.innerHTML = `<div class="group-header">${base}${variants.length>1 ? `（${variants.length}バージョン）` : ''}<span class="gline"></span></div>`;
-    const rows = document.createElement('div');
-    rows.className = 'group-rows';
+  // メイン曲・変化球曲に分けて表示
+  const mainBases = baseOrder.filter(b=> !HENKYOKU_BASE.has(b) && Math.max(...groups[b].map(s=>s.freq)) >= 3);
+  const henkyokuBases = baseOrder.filter(b=> HENKYOKU_BASE.has(b) || Math.max(...groups[b].map(s=>s.freq)) < 3);
 
-    variants.forEach(song=>{
-      const row = document.createElement('div');
-      row.className = 'song-row' + (isUsed ? ' used' : '');
-      const color = song.freq>=4 ? '#ff4f8b' : (song.freq>=3 ? '#ffd23f' : '#5a4f72');
-      row.innerHTML = `
-        <span class="freq-dot" style="background:${color}"></span>
-        <span class="song-main">
-          <div class="song-title">${song.t}</div>
-          <div class="song-meta">${song.time}</div>
-        </span>
-        ${isUsed ? '<span class="badge-used">採用済</span>' : ''}
-      `;
-      row.addEventListener('click', ()=>{
-        if(isUsed) return;
-        setlist.push({type:'song', t:song.t, time:toSec(song.time), light:song.light||'', onkyo:song.onkyo||'', kikkake:'音先', remark:'', id:Date.now()+Math.random()});
-        renderAll();
+  const renderGroup = (bases, sectionLabel, dotColor) => {
+    const sec = document.createElement('div');
+    sec.style.cssText = 'margin-bottom:14px;';
+    sec.innerHTML = `<div style="font-size:11px;font-weight:700;color:${dotColor};letter-spacing:.05em;padding:4px 0 6px;display:flex;align-items:center;gap:6px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};display:inline-block;"></span>${sectionLabel}
+    </div>`;
+    bases.forEach(base=>{
+      const variants = groups[base];
+      const groupEl = document.createElement('div');
+      groupEl.className = 'song-group';
+      const isUsed = used.has(base);
+      groupEl.innerHTML = `<div class="group-header">${base}${variants.length>1 ? `（${variants.length}バージョン）` : ''}<span class="gline"></span></div>`;
+      const rows = document.createElement('div');
+      rows.className = 'group-rows';
+      variants.forEach(song=>{
+        const row = document.createElement('div');
+        row.className = 'song-row' + (isUsed ? ' used' : '');
+        row.innerHTML = `
+          <span class="freq-dot" style="background:${dotColor}"></span>
+          <span class="song-main">
+            <div class="song-title">${song.t}</div>
+            <div class="song-meta">${song.time}</div>
+          </span>
+          ${isUsed ? '<span class="badge-used">採用済</span>' : ''}
+        `;
+        row.addEventListener('click', ()=>{
+          if(isUsed) return;
+          setlist.push({type:'song', t:song.t, time:toSec(song.time), light:song.light||'', onkyo:song.onkyo||'', kikkake:'音先', remark:'', id:Date.now()+Math.random()});
+          renderAll();
+        });
+        rows.appendChild(row);
       });
-      rows.appendChild(row);
+      groupEl.appendChild(rows);
+      sec.appendChild(groupEl);
     });
-    groupEl.appendChild(rows);
-    list.appendChild(groupEl);
-  });
+    list.appendChild(sec);
+  };
+
+  renderGroup(mainBases, 'メイン曲', '#ff4f8b');
+  renderGroup(henkyokuBases, '変化球曲', '#7b6fa0');
 }
 
 let dragIndex = null;
@@ -810,7 +850,21 @@ function buildCandidatePool(){
     }
     pool.push(chosen);
   });
-  return pool.sort((a,b)=> b.freq - a.freq || Math.random()-0.5);
+  // メイン曲は全曲同一確率でシャッフル、変化球曲は7%の確率で採用候補に入れる
+  // 確率0%曲（ZERO_PROB_BASE）は除外
+  const mainPool = pool.filter(s => isMain(s) && !ZERO_PROB_BASE.has(baseTitle(s.t)));
+  const henkyokuPool = pool.filter(s => isHenkyoku(s) && !ZERO_PROB_BASE.has(baseTitle(s.t)));
+
+  // メイン曲はランダムシャッフル（均等確率）
+  for(let i = mainPool.length-1; i > 0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [mainPool[i], mainPool[j]] = [mainPool[j], mainPool[i]];
+  }
+
+  // 変化球曲は7%で候補入り
+  const activeHenkyoku = henkyokuPool.filter(()=> Math.random() < HENKYOKU_PROB);
+
+  return [...mainPool, ...activeHenkyoku];
 }
 
 function autoGenerate(){

@@ -118,7 +118,15 @@
     user-select:none;
   }
   .drag-handle:active{ cursor:grabbing; color:var(--accent2); }
-  .lock-btn{
+  .slot.custom{ border-color:#ffd23f; border-style:dashed; }
+  .custom-title-input{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    color:var(--text);font-size:12.5px;padding:3px 7px;flex:1 1 120px;min-width:80px;
+  }
+  .custom-time-input{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    color:var(--accent2);font-size:11px;padding:3px 4px;width:52px;text-align:center;
+  }
     background:none;border:none;cursor:pointer;
     font-size:14px;padding:1px 3px;flex:0 0 auto;opacity:.8;
   }
@@ -417,6 +425,7 @@
 
     <div class="actions">
       <button class="btn secondary" id="addMcBtn">＋ MCを追加</button>
+      <button class="btn secondary" id="addCustomBtn">＋ カスタム曲を追加</button>
       <button class="btn secondary" id="resetBtn">リセット</button>
       <button class="btn" id="genBtn">PDF出力</button>
       <button class="btn secondary" id="printBtn" style="display:none;">🖨 印刷／PDF保存</button>
@@ -671,6 +680,62 @@ function renderSetlist(){
   } else {
     setlist.forEach((item, i)=>{
       const slot = document.createElement('div');
+      // カスタム曲は専用スタイル
+      if(item.type==='custom'){
+        slot.className = 'slot custom';
+        slot.draggable = true;
+        slot.dataset.i = i;
+        slot.innerHTML = `
+          <span class="drag-handle" title="長押しして並び替え">⠿</span>
+          <div class="idx">${i+1}</div>
+          <input type="text" class="custom-title-input" data-i="${i}" placeholder="曲名を入力" value="${(item.t||'').replace(/"/g,'&quot;')}">
+          <select class="kikkake-select" data-i="${i}">
+            <option value="音先" ${item.kikkake==='音先'?'selected':''}>音先</option>
+            <option value="曲振り" ${item.kikkake==='曲振り'?'selected':''}>曲振り</option>
+            <option value="板付" ${item.kikkake==='板付'?'selected':''}>板付</option>
+            <option value="" ${!item.kikkake?'selected':''}>―</option>
+          </select>
+          <input type="text" class="custom-time-input" data-i="${i}" placeholder="0:00" value="${item.time?toMMSS(item.time):''}" title="時間を入力(例:3:30)">
+          <input type="text" class="remark-input" data-i="${i}" placeholder="備考" value="${(item.remark||'').replace(/"/g,'&quot;')}">
+          <button data-i="${i}" title="削除">×</button>
+        `;
+        slot.querySelector('button[title="削除"]').addEventListener('click', (e)=>{
+          setlist.splice(+e.target.dataset.i, 1); renderAll();
+        });
+        slot.querySelector('.custom-title-input').addEventListener('click', e=> e.stopPropagation());
+        slot.querySelector('.custom-title-input').addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].t = e.target.value;
+          updateSummary();
+        });
+        slot.querySelector('.custom-time-input').addEventListener('click', e=> e.stopPropagation());
+        slot.querySelector('.custom-time-input').addEventListener('change', (e)=>{
+          const idx = +e.target.dataset.i;
+          const m = e.target.value.trim().match(/^(\d+):(\d{2})$/);
+          if(m){ setlist[idx].time = +m[1]*60 + +m[2]; renderAll(); }
+          else { e.target.value = setlist[idx].time ? toMMSS(setlist[idx].time) : ''; }
+        });
+        slot.querySelector('.kikkake-select').addEventListener('click', e=> e.stopPropagation());
+        slot.querySelector('.kikkake-select').addEventListener('change', (e)=>{
+          setlist[+e.target.dataset.i].kikkake = e.target.value;
+        });
+        slot.querySelector('.remark-input').addEventListener('click', e=> e.stopPropagation());
+        slot.querySelector('.remark-input').addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].remark = e.target.value;
+        });
+        // ドラッグ
+        slot.addEventListener('dragstart', (e)=>{ dragIndex = i; e.dataTransfer.effectAllowed='move'; });
+        slot.addEventListener('dragover', (e)=>{ e.preventDefault(); slot.classList.add('drag-over'); });
+        slot.addEventListener('dragleave', ()=> slot.classList.remove('drag-over'));
+        slot.addEventListener('drop', (e)=>{
+          e.preventDefault(); slot.classList.remove('drag-over');
+          const di = +slot.dataset.i;
+          if(dragIndex===null||dragIndex===di) return;
+          const moved = setlist.splice(dragIndex,1)[0]; setlist.splice(di,0,moved); dragIndex=null; renderAll();
+        });
+        box.appendChild(slot);
+        return;
+      }
+
       slot.className = 'slot' + (item.type==='mc' ? ' mc' : '');
       slot.draggable = true;
       slot.dataset.i = i;
@@ -1010,59 +1075,106 @@ function findSongByText(text){
 }
 
 // 「曲名　きっかけ」のように、きっかけ列を含む行からタイトル部分のみを取り出す
-function extractTitleAndKikkake(line){
+// 行から タイトル・きっかけ・タイム を抽出
+function extractTitleKikkakeTime(line){
   const KIKKAKE_WORDS = ['音先','曲振り','板付'];
-  // タブ・全角スペース・連続半角スペースで区切られた末尾トークンがきっかけ語かどうか判定
-  const parts = line.split(/[\t　]+|\s{2,}/).map(p=>p.trim()).filter(p=>p.length>0);
-  if(parts.length >= 2 && KIKKAKE_WORDS.includes(parts[parts.length-1])){
-    return { title: parts.slice(0, -1).join(' '), kikkake: parts[parts.length-1] };
+  const TIME_RE = /\s*(\d+):(\d{2})\s*$/; // 末尾のタイム
+  const KIKKAKE_RE = new RegExp(`[\\s　](${KIKKAKE_WORDS.join('|')})\\s*$`);
+
+  // 先頭のナンバリングを除去（スラッシュを含む日付行は除く）
+  let s = line;
+  if(!/^\d{1,4}\/\d/.test(line)){
+    s = line
+      .replace(/^[\(（]?\d+[\)）\.．\s　。、]*/,'')
+      .replace(/^[①-⑳㉑-㊿]+[\s　]*/,'')
+      .trim();
+  } else {
+    s = line.trim();
   }
-  return { title: line, kikkake: null };
+
+  if(!s) return { title: '', kikkake: null, time: null };
+
+  let title = s, kikkake = null, time = null;
+
+  // 末尾のタイムを抽出（あれば）
+  const timeMatch = title.match(TIME_RE);
+  if(timeMatch){
+    time = +timeMatch[1]*60 + +timeMatch[2];
+    title = title.slice(0, timeMatch.index).trim();
+  }
+
+  // 末尾のきっかけ語を抽出（あれば）
+  const kikkakeMatch = title.match(KIKKAKE_RE);
+  if(kikkakeMatch){
+    kikkake = kikkakeMatch[1];
+    title = title.slice(0, kikkakeMatch.index).trim();
+  }
+
+  return { title: title.trim(), kikkake, time };
 }
 
 document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
   const raw = document.getElementById('textInput').value;
   const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
   const newSetlist = [];
-  const notFound = [];
   const usedBase = new Set();
 
   lines.forEach(line=>{
+    // 合計タイム行・SE行・退場MC行はスキップ
+    if(/^合計タイム|^登場SE|^退場MC/.test(line)) return;
+    // 日付行をスキップ（例: 7/22, 2026/7/22）
+    if(/^\d{1,4}\/\d{1,2}(\/\d{1,2})?$/.test(line.trim())) return;
+    // 空行スキップ
+    if(!line.trim()) return;
+
+    // MC行
     if(/^MC\b/i.test(line)){
-      // 「MC」や「MC 2:00」のような行に対応
       const m = line.match(/(\d+):(\d{2})/);
       const time = m ? (+m[1]*60 + +m[2]) : 120;
       newSetlist.push({type:'mc', t:'MC', time, id:Date.now()+Math.random()});
       return;
     }
-    const { title, kikkake } = extractTitleAndKikkake(line);
+
+    const { title, kikkake, time } = extractTitleKikkakeTime(line);
+    if(!title) return;
+
     const song = findSongByText(title);
-    if(!song){
-      notFound.push(line);
-      return;
+    if(song){
+      const base = baseTitle(song.t);
+      if(usedBase.has(base)) return;
+      usedBase.add(base);
+      newSetlist.push({
+        type:'song', t:song.t, time:toSec(song.time),
+        light:song.light||'', onkyo:song.onkyo||'', kikkake: kikkake || '音先', remark:'',
+        id:Date.now()+Math.random()
+      });
+    } else {
+      // ナンバリングあり、またはタイム/きっかけが含まれる行のみカスタム曲として追加
+      // （会場名・イベント名などの単純なテキスト行はスキップ）
+      const hasNumber = /^[①-⑳㉑-㊿]|^[\(（]?\d+[\)）\.．]/.test(line.trim());
+      if(hasNumber || time || kikkake){
+        newSetlist.push({
+          type:'custom', t:title, time: time || 0,
+          kikkake: kikkake || '音先', remark:'', light:'', onkyo:'',
+          id:Date.now()+Math.random()
+        });
+      }
+      // ナンバリングも時間もきっかけもない行（会場名など）は無視
     }
-    const base = baseTitle(song.t);
-    if(usedBase.has(base)){
-      return; // 同一曲のバリエーション重複はスキップ
-    }
-    usedBase.add(base);
-    newSetlist.push({
-      type:'song', t:song.t, time:toSec(song.time),
-      light:song.light||'', onkyo:song.onkyo||'', kikkake: kikkake || '音先', remark:'',
-      id:Date.now()+Math.random()
-    });
   });
 
   setlist = newSetlist;
-  const warnEl = document.getElementById('textInputWarning');
-  warnEl.textContent = notFound.length
-    ? `※以下は楽曲が見つかりませんでした：${notFound.join('、')}`
-    : '';
+  document.getElementById('textInputWarning').textContent = '';
   renderAll();
 });
 
 document.getElementById('addMcBtn').addEventListener('click', ()=>{
   setlist.push({type:'mc', t:'MC', time:120, id:Date.now()+Math.random()});
+  renderAll();
+});
+
+document.getElementById('addCustomBtn').addEventListener('click', ()=>{
+  setlist.push({type:'custom', t:'', time:0, kikkake:'音先', remark:'', light:'', onkyo:'', id:Date.now()+Math.random()});
   renderAll();
 });
 

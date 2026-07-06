@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>グットクルー セトリビルダー</title>
+<title>セトリビルダー</title>
+<!-- グループ設定ファイル（同じフォルダに group-config.js を置くと自動で読み込まれます） -->
+<script src="group-config.js" onerror="window._configLoadFailed=true"></script>
 <style>
   :root{
     --bg:#15121c;
@@ -165,10 +167,23 @@
   .slot.optional-fixed .idx{ background:#5a4f72; }
   .slot.disabled-fixed .title{ text-decoration:line-through; color:var(--text-dim); }
   .toggle-fixed-btn{
-    background:none;border:1px solid var(--line);color:var(--text-dim);
-    border-radius:6px;font-size:10px;padding:2px 6px;cursor:pointer;flex:0 0 auto;
+    border:none;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    padding:4px 10px;
+    cursor:pointer;
+    flex:0 0 auto;
+    transition: background .2s, color .2s;
   }
-  .toggle-fixed-btn.active{ border-color:var(--accent);color:var(--accent); }
+  .toggle-fixed-btn.active{
+    background:var(--green);
+    color:#0c2418;
+  }
+  .toggle-fixed-btn:not(.active){
+    background:#6b2040;
+    color:#ffaac8;
+  }
 
   .song-main{flex:1;min-width:0;}
   .song-title{font-size:13.5px;font-weight:600;}
@@ -516,6 +531,33 @@ const ZERO_PROB_BASE = new Set(["BRAVE","ESCAPE!","夢見がち Sound & Beat","B
 
 // 変化球曲の採用確率（7%）
 const HENKYOKU_PROB = 0.07;
+
+// GROUP_CONFIG（外部ファイル）が読み込まれていれば上書き
+(function applyGroupConfig(){
+  const C = window.GROUP_CONFIG;
+  if(!C) return;
+  if(C.songs && C.songs.length) DB.splice(0, DB.length, ...C.songs);
+  if(C.priorityBase) PRIORITY_BASE.splice(0, PRIORITY_BASE.length, ...C.priorityBase);
+  if(C.henkyokuBase){ HENKYOKU_BASE.clear(); C.henkyokuBase.forEach(b=> HENKYOKU_BASE.add(b)); }
+  if(C.zeroProbBase){ ZERO_PROB_BASE.clear(); C.zeroProbBase.forEach(b=> ZERO_PROB_BASE.add(b)); }
+  if(C.henkyokuProb !== undefined) window._HENKYOKU_PROB_OVERRIDE = C.henkyokuProb;
+  if(C.micImage) window.MIC_IMG = C.micImage;
+  if(C.logoImage) window.LOGO_IMG = C.logoImage;
+  if(C.groupName) document.title = `${C.groupName} セトリビルダー`;
+  // フォームのデフォルト値を反映（DOMロード後に設定）
+  window.addEventListener('DOMContentLoaded', ()=>{
+    if(C.defaultMicCount) document.getElementById('micCount').value = C.defaultMicCount;
+    if(C.defaultOutput){
+      const s = document.getElementById('onkyoMethod');
+      if([...s.options].some(o=>o.value===C.defaultOutput)) s.value = C.defaultOutput;
+    }
+    if(C.defaultJack !== undefined){
+      const s = document.getElementById('outputJack');
+      if([...s.options].some(o=>o.value===C.defaultJack)) s.value = C.defaultJack;
+    }
+    if(C.defaultRequest) document.getElementById('generalRequest').value = C.defaultRequest;
+  });
+})();
 
 function isHenkyoku(song){
   return HENKYOKU_BASE.has(baseTitle(song.t));
@@ -1159,7 +1201,8 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
     if(/^MC\b/i.test(line)){
       const m = line.match(/(\d+):(\d{2})/);
       const time = m ? (+m[1]*60 + +m[2]) : 120;
-      newSetlist.push({type:'mc', t:'MC', time, id:Date.now()+Math.random()});
+      const locked = !!m; // タイム指定あり→逆算から除外
+      newSetlist.push({type:'mc', t:'MC', time, locked, id:Date.now()+Math.random()});
       return;
     }
 

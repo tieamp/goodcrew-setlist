@@ -133,6 +133,13 @@
     font-size:14px;padding:1px 3px;flex:0 0 auto;opacity:.8;
   }
   .lock-btn:hover{ opacity:1; transform:scale(1.15); }
+  .track-input{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    color:var(--accent2);font-size:11px;padding:3px 4px;width:48px;text-align:center;
+    display:none;
+  }
+  .track-input::placeholder{ color:var(--text-dim); font-size:10px; }
+  body.cd-mode .track-input{ display:inline-block; }
   @media (max-width:600px){
     .drag-handle{ display:flex; align-items:center; }
   }
@@ -272,7 +279,7 @@
   }
   table.doc-table th{background:#222;color:#fff;text-align:center;font-size:8px;}
   /* 列幅: タイトルを広めに確保 */
-  table.doc-table td.num, table.doc-table th:nth-child(1){text-align:center;width:16px;background:#f4f4f4;font-weight:700;}
+  table.doc-table td.num, table.doc-table th:nth-child(1){text-align:center;width:42px;background:#f4f4f4;font-weight:700;font-size:7.5px;}
   table.doc-table th:nth-child(2), table.doc-table td.ttl{width:24%;font-weight:600;}
   table.doc-table th:nth-child(3), table.doc-table td:nth-child(3){width:9%;text-align:center;}
   table.doc-table th:nth-child(4), table.doc-table td:nth-child(4){width:8%;text-align:center;}
@@ -738,6 +745,7 @@ function renderSetlist(){
             <option value="音先" ${item.kikkake==='音先'?'selected':''}>音先</option>
             <option value="曲振り" ${item.kikkake==='曲振り'?'selected':''}>曲振り</option>
             <option value="板付" ${item.kikkake==='板付'?'selected':''}>板付</option>
+            <option value="続けて" ${item.kikkake==='続けて'?'selected':''} class="cd-only" style="display:none;">続けて</option>
             <option value="" ${!item.kikkake?'selected':''}>―</option>
           </select>
           <input type="text" class="custom-time-input" data-i="${i}" placeholder="0:00" value="${item.time?toMMSS(item.time):''}" title="時間を入力(例:3:30)">
@@ -814,10 +822,13 @@ function renderSetlist(){
           <option value="音先" ${item.kikkake==='音先'?'selected':''}>音先</option>
           <option value="曲振り" ${item.kikkake==='曲振り'?'selected':''}>曲振り</option>
           <option value="板付" ${item.kikkake==='板付'?'selected':''}>板付</option>
+          <option value="続けて" ${item.kikkake==='続けて'?'selected':''} class="cd-only" style="display:none;">続けて</option>
           <option value="" ${!item.kikkake?'selected':''}>―</option>
         </select>` : '';
       const remarkHtml = item.type==='song' ? `
         <input type="text" class="remark-input" data-i="${i}" placeholder="備考" value="${(item.remark||'').replace(/"/g,'&quot;')}">` : '';
+      const trackHtml = item.type==='song' ? `
+        <input type="text" class="track-input" data-i="${i}" placeholder="TR." value="${(item.track||'').replace(/"/g,'&quot;')}" title="CDトラック番号">` : '';
       // MCは手動で時間を入力できるinputを表示
       const mcTimeHtml = item.type==='mc' ? `
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
@@ -829,6 +840,7 @@ function renderSetlist(){
         <div class="idx">${i+1}</div>
         <div class="title">${label}</div>
         ${kikkakeHtml}
+        ${trackHtml}
         ${remarkHtml}
         ${mcTimeHtml}
         ${lockBtnHtml}
@@ -865,6 +877,13 @@ function renderSetlist(){
         remarkInput.addEventListener('input', (e)=>{
           const idx = +e.target.dataset.i;
           setlist[idx].remark = e.target.value;
+        });
+      }
+      const trackInput = slot.querySelector('.track-input');
+      if(trackInput){
+        trackInput.addEventListener('click', e=> e.stopPropagation());
+        trackInput.addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].track = e.target.value;
         });
       }
       const mcInput = slot.querySelector('.mc-time-input');
@@ -1092,9 +1111,21 @@ function autoGenerate(){
 function renderAll(){
   renderSongList();
   renderSetlist();
+  updateCdMode();
 }
 
 document.getElementById('targetMin').addEventListener('input', updateSummary);
+
+function updateCdMode(){
+  const isCd = document.getElementById('onkyoMethod').value === 'CD';
+  document.body.classList.toggle('cd-mode', isCd);
+  // 「続けて」オプションをCDモード時のみ表示
+  document.querySelectorAll('.kikkake-select .cd-only').forEach(opt=>{
+    opt.style.display = isCd ? '' : 'none';
+  });
+}
+document.getElementById('onkyoMethod').addEventListener('change', updateCdMode);
+updateCdMode();
 document.getElementById('autoGenBtn').addEventListener('click', autoGenerate);
 
 document.getElementById('textInputToggleBtn').addEventListener('click', ()=>{
@@ -1147,7 +1178,7 @@ function findSongByText(text){
 // 「曲名　きっかけ」のように、きっかけ列を含む行からタイトル部分のみを取り出す
 // 行から タイトル・きっかけ・タイム を抽出
 function extractTitleKikkakeTime(line){
-  const KIKKAKE_WORDS = ['音先','曲振り','板付'];
+  const KIKKAKE_WORDS = ['音先','曲振り','板付','続けて'];
   const TIME_RE = /\s*(\d+):(\d{2})\s*$/; // 末尾のタイム
   const KIKKAKE_RE = new RegExp(`[\\s　](${KIKKAKE_WORDS.join('|')})\\s*$`);
 
@@ -1342,6 +1373,8 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
     </tr>`;
   }
 
+  const isCd = onkyoMethod === 'CD';
+
   let n = 1;
   setlist.forEach(item=>{
     if(item.type==='mc'){
@@ -1356,9 +1389,11 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
           <td></td>
         </tr>`;
     } else {
+      const trackLabel = isCd && item.track ? `【TR.${escapeHtml(item.track)}】` : '';
+      const numCell = `${n}${trackLabel}`;
       rows += `
         <tr>
-          <td class="num">${n}</td>
+          <td class="num">${numCell}</td>
           <td class="ttl">${escapeHtml(item.t)}</td>
           <td>${escapeHtml(item.kikkake||'')}</td>
           <td>${toMMSS(item.time)}</td>

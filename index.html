@@ -133,7 +133,10 @@
     font-size:14px;padding:1px 3px;flex:0 0 auto;opacity:.8;
   }
   .lock-btn:hover{ opacity:1; transform:scale(1.15); }
-  .track-input{
+  .onkyo-edit-input, .light-edit-input{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    color:var(--text);font-size:10px;padding:3px 6px;flex:0 1 90px;width:90px;
+  }
     background:var(--panel);border:1px solid var(--line);border-radius:6px;
     color:var(--accent2);font-size:11px;padding:3px 4px;width:48px;text-align:center;
     display:none;
@@ -455,6 +458,7 @@
       <button class="btn secondary" id="printBtn" style="display:none;">🖨 印刷／PDF保存</button>
       <button class="btn secondary" id="downloadPrintBtn" style="display:none;">⬇ 印刷用HTMLを保存</button>
       <button class="btn" id="textGenBtn">テキスト出力</button>
+      <button class="btn secondary" id="excelBtn">📊 Excel出力</button>
     </div>
     <div id="saveMsg" style="font-size:11px;color:var(--green);margin-top:6px;display:none;"></div>
 
@@ -832,6 +836,10 @@ function renderSetlist(){
       // MCは手動で時間を入力できるinputを表示
       const mcTimeHtml = item.type==='mc' ? `
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
+      const onkyoHtml = item.type==='song' ? `
+        <input type="text" class="onkyo-edit-input" data-i="${i}" placeholder="音響要望" value="${(item.onkyo||'').replace(/"/g,'&quot;')}" title="音響要望（編集可）">` : '';
+      const lightHtml = item.type==='song' ? `
+        <input type="text" class="light-edit-input" data-i="${i}" placeholder="照明要望" value="${(item.light||'').replace(/"/g,'&quot;')}" title="照明要望（編集可）">` : '';
       const label = item.type==='mc' ? 'MC' : item.t;
       const lockBtnHtml = (item.type==='mc' && item.locked) ? `
         <button class="lock-btn" data-i="${i}" title="タップで逆算に戻す">🔒</button>` : '';
@@ -841,6 +849,8 @@ function renderSetlist(){
         <div class="title">${label}</div>
         ${kikkakeHtml}
         ${trackHtml}
+        ${onkyoHtml}
+        ${lightHtml}
         ${remarkHtml}
         ${mcTimeHtml}
         ${lockBtnHtml}
@@ -877,6 +887,20 @@ function renderSetlist(){
         remarkInput.addEventListener('input', (e)=>{
           const idx = +e.target.dataset.i;
           setlist[idx].remark = e.target.value;
+        });
+      }
+      const onkyoEdit = slot.querySelector('.onkyo-edit-input');
+      if(onkyoEdit){
+        onkyoEdit.addEventListener('click', e=> e.stopPropagation());
+        onkyoEdit.addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].onkyo = e.target.value;
+        });
+      }
+      const lightEdit = slot.querySelector('.light-edit-input');
+      if(lightEdit){
+        lightEdit.addEventListener('click', e=> e.stopPropagation());
+        lightEdit.addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].light = e.target.value;
         });
       }
       const trackInput = slot.querySelector('.track-input');
@@ -1114,17 +1138,111 @@ function renderAll(){
   updateCdMode();
 }
 
-document.getElementById('targetMin').addEventListener('input', updateSummary);
+document.getElementById('excelBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('excelBtn');
+  btn.textContent = '⏳ 生成中…';
+  btn.disabled = true;
+
+  // SheetJSをCDNから動的読み込み
+  if(!window.XLSX){
+    await new Promise((resolve, reject)=>{
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = resolve;
+      s.onerror = ()=> reject(new Error('SheetJS読み込み失敗'));
+      document.head.appendChild(s);
+    });
+  }
+
+  const date      = document.getElementById('eventDate').value;
+  const venue     = document.getElementById('venueName').value.trim() || '未定';
+  const eventName = document.getElementById('eventName').value.trim() || '未定';
+  const micCount  = document.getElementById('micCount').value.trim() || '未定';
+  const onkyoMethod = document.getElementById('onkyoMethod').value.trim() || '未定';
+  const outputJack  = document.getElementById('outputJack').value.trim() || '';
+  const generalRequest = document.getElementById('generalRequest').value.trim();
+  const isCd = onkyoMethod === 'CD';
+
+  const dateStr = date ? date.replace(/-/g,'/') : '　/　/　';
+  const total = getActiveSESec() + setlist.reduce((a,b)=>a+b.time,0) + getActiveExitSec();
+
+  // ─── データ行を組み立て ───
+  const aoa = []; // array of arrays
+  aoa.push([`日程：${dateStr}`, '', '', '', '', '', '']);
+  aoa.push(['SET LIST', '', '', '', '', '', '']);
+  aoa.push(['出演者', 'グットクルー', '', '', '会場名', venue, '']);
+  aoa.push(['イベント名', eventName, '', '', '', '', '']);
+  aoa.push(['マイク本数', micCount, '音出し', onkyoMethod, '出力端子', outputJack, '']);
+  if(generalRequest) aoa.push(['要望', generalRequest, '', '', '', '', '']);
+  aoa.push([]); // 空行
+
+  // テーブルヘッダー
+  aoa.push(['曲数', 'タイトル', 'キッカケ', 'TIME', '音響要望', '照明要望', '備考']);
+
+  // SE行
+  if(useStartSE){
+    aoa.push(['SE', '【 SE 】', '音先', toMMSS(SE_SEC), '', 'クール→ポップ', '']);
+  }
+
+  // 曲・MC
+  let n = 1;
+  setlist.forEach(item=>{
+    if(item.type==='mc'){
+      aoa.push([n, '【MC】', '', toMMSS(item.time), '', '', '']);
+    } else {
+      const trackLabel = isCd && item.track ? `${n}【TR.${item.track}】` : n;
+      aoa.push([trackLabel, item.t, item.kikkake||'', toMMSS(item.time), item.onkyo||'', item.light||'', item.remark||'']);
+    }
+    n++;
+  });
+
+  // 退場MC
+  if(useExitMC){
+    aoa.push([n, '【退場MC】', '', toMMSS(EXIT_MC_SEC), '', '', '']);
+  }
+
+  aoa.push([]); // 空行
+  aoa.push(['', '', '', '', '', `合計時間　${toMMSS(total)}`, '']);
+
+  // ─── ワークブック生成 ───
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+  // 列幅設定
+  ws['!cols'] = [
+    {wch:10},  // 曲数
+    {wch:30},  // タイトル
+    {wch:8},   // キッカケ
+    {wch:7},   // TIME
+    {wch:24},  // 音響要望
+    {wch:18},  // 照明要望
+    {wch:20},  // 備考
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'SET LIST');
+
+  // ファイルダウンロード
+  const dateFile = date ? date.replace(/-/g,'') : 'setlist';
+  XLSX.writeFile(wb, `グットクルー_セトリ_${dateFile}.xlsx`);
+
+  btn.textContent = '📊 Excel出力';
+  btn.disabled = false;
+});
 
 function updateCdMode(){
   const isCd = document.getElementById('onkyoMethod').value === 'CD';
   document.body.classList.toggle('cd-mode', isCd);
+  // トラック入力欄をCDモード時のみ表示（JS直接制御で確実に）
+  document.querySelectorAll('.track-input').forEach(el=>{
+    el.style.display = isCd ? 'inline-block' : 'none';
+  });
   // 「続けて」オプションをCDモード時のみ表示
   document.querySelectorAll('.kikkake-select .cd-only').forEach(opt=>{
     opt.style.display = isCd ? '' : 'none';
   });
 }
 document.getElementById('onkyoMethod').addEventListener('change', updateCdMode);
+document.getElementById('targetMin').addEventListener('input', updateSummary);
 updateCdMode();
 document.getElementById('autoGenBtn').addEventListener('click', autoGenerate);
 

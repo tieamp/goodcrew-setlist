@@ -839,9 +839,9 @@ function renderSetlist(){
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
       const mcRemarkHtml = item.type==='mc' ? `
         <input type="text" class="remark-input" data-i="${i}" placeholder="補足メモ（例: オープニング / 意気込み）" value="${(item.remark||'').replace(/"/g,'&quot;')}" style="flex:1 1 160px;min-width:100px;">` : '';
-      const onkyoHtml = item.type==='song' ? `
+      const onkyoHtml = (item.type==='song'||item.type==='mc') ? `
         <input type="text" class="onkyo-edit-input" data-i="${i}" placeholder="音響要望" value="${(item.onkyo||'').replace(/"/g,'&quot;')}" title="音響要望（編集可）">` : '';
-      const lightHtml = item.type==='song' ? `
+      const lightHtml = (item.type==='song'||item.type==='mc') ? `
         <input type="text" class="light-edit-input" data-i="${i}" placeholder="照明要望" value="${(item.light||'').replace(/"/g,'&quot;')}" title="照明要望（編集可）">` : '';
       const label = item.type==='mc' ? 'MC' : item.t;
       const lockBtnHtml = (item.type==='mc' && item.locked) ? `
@@ -1126,7 +1126,7 @@ function autoGenerate(){
         setlist.push(selected[songIdx++]);
       }
       if(seg < mcCount){
-        setlist.push({type:'mc', t:'MC', time:mcTimes[seg], id:Date.now()+Math.random()});
+        setlist.push({type:'mc', t:'MC', time:mcTimes[seg], remark:'', onkyo:'', light:'', id:Date.now()+Math.random()});
       }
     }
   } else {
@@ -1192,7 +1192,8 @@ document.getElementById('excelBtn').addEventListener('click', async ()=>{
   let n = 1;
   setlist.forEach(item=>{
     if(item.type==='mc'){
-      aoa.push([n, '【MC】', '', toMMSS(item.time), '', '', '']);
+      const mcTitle = item.remark ? `【MC】（${item.remark}）` : '【MC】';
+      aoa.push([n, mcTitle, '', toMMSS(item.time), item.onkyo||'', item.light||'', '']);
     } else {
       const trackLabel = isCd && item.track ? `${n}【TR.${item.track}】` : n;
       aoa.push([trackLabel, item.t, item.kikkake||'', toMMSS(item.time), item.onkyo||'', item.light||'', item.remark||'']);
@@ -1358,7 +1359,7 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
       // 括弧内の補足メモを抽出（例: MC（オープニング / 意気込み））
       const remarkMatch = line.match(/[（(]([^）)]+)[）)]/);
       const remark = remarkMatch ? remarkMatch[1].trim() : '';
-      newSetlist.push({type:'mc', t:'MC', time, locked, remark, id:Date.now()+Math.random()});
+      newSetlist.push({type:'mc', t:'MC', time, locked, remark, onkyo:'', light:'', id:Date.now()+Math.random()});
       return;
     }
 
@@ -1396,7 +1397,7 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('addMcBtn').addEventListener('click', ()=>{
-  setlist.push({type:'mc', t:'MC', time:120, id:Date.now()+Math.random()});
+  setlist.push({type:'mc', t:'MC', time:120, remark:'', onkyo:'', light:'', id:Date.now()+Math.random()});
   renderAll();
 });
 
@@ -1503,15 +1504,16 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
   let n = 1;
   setlist.forEach(item=>{
     if(item.type==='mc'){
+      const mcTitle = item.remark ? `【MC】（${escapeHtml(item.remark)}）` : '【MC】';
       rows += `
         <tr>
           <td class="num">${n}</td>
-          <td class="ttl">【MC】</td>
+          <td class="ttl">${mcTitle}</td>
           <td></td>
           <td>${toMMSS(item.time)}</td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td class="onkyo">${escapeHtml(item.onkyo||'')}</td>
+          <td class="light">${escapeHtml(item.light||'')}</td>
+          <td class="remark"></td>
         </tr>`;
     } else {
       const trackLabel = isCd && item.track ? `【TR.${escapeHtml(item.track)}】` : '';

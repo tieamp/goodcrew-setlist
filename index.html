@@ -1352,10 +1352,13 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
 
     // MC行
     if(/^MC\b/i.test(line)){
-      const m = line.match(/(\d+):(\d{2})/);
-      const time = m ? (+m[1]*60 + +m[2]) : 120;
-      const locked = !!m; // タイム指定あり→逆算から除外
-      newSetlist.push({type:'mc', t:'MC', time, locked, id:Date.now()+Math.random()});
+      const timeMatch = line.match(/(\d+):(\d{2})/);
+      const time = timeMatch ? (+timeMatch[1]*60 + +timeMatch[2]) : 120;
+      const locked = !!timeMatch;
+      // 括弧内の補足メモを抽出（例: MC（オープニング / 意気込み））
+      const remarkMatch = line.match(/[（(]([^）)]+)[）)]/);
+      const remark = remarkMatch ? remarkMatch[1].trim() : '';
+      newSetlist.push({type:'mc', t:'MC', time, locked, remark, id:Date.now()+Math.random()});
       return;
     }
 
@@ -1628,10 +1631,9 @@ window.fitAndPrintReady = function(){ autoFitTableText(); };
 `;
 
 document.getElementById('kanpeBtn').addEventListener('click', ()=>{
-  const date      = document.getElementById('eventDate').value;
-  const venue     = document.getElementById('venueName').value.trim();
-  const eventName = document.getElementById('eventName').value.trim();
-  const dateStr   = date ? (()=>{ const p=date.split('-'); return `${+p[1]}/${+p[2]}`; })() : '';
+  const win = window.open('', '_blank');
+  if(!win){ alert('ポップアップがブロックされています。許可してから再度お試しください。'); return; }
+  win.document.open();
 
   let rows = '';
   setlist.forEach(item=>{
@@ -1653,14 +1655,6 @@ document.getElementById('kanpeBtn').addEventListener('click', ()=>{
   });
   if(useExitMC) rows += `<div class="kanpe-row kanpe-mc">退場MC</div>`;
 
-  const headerParts = [dateStr, venue, eventName].filter(Boolean);
-  const headerHtml = headerParts.length
-    ? `<div class="kanpe-header">${headerParts.map(escapeHtml).join('　')}</div>`
-    : '';
-
-  const win = window.open('', '_blank');
-  if(!win){ alert('ポップアップがブロックされています。許可してから再度お試しください。'); return; }
-  win.document.open();
   win.document.write(`<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1676,15 +1670,19 @@ html, body{
 }
 @page{ size:A4 portrait; margin:8mm; }
 body{ padding:10mm; }
-.kanpe-header{
-  font-size:18px;
-  font-weight:900;
-  color:#fff;
-  border-bottom:3px solid #555;
-  padding-bottom:6px;
+.back-btn{
+  display:inline-block;
   margin-bottom:12px;
-  letter-spacing:.05em;
+  padding:8px 18px;
+  background:#333;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
 }
+@media print{ .back-btn{ display:none; } }
 .kanpe-list{ display:flex; flex-direction:column; gap:6px; }
 .kanpe-row{
   font-size:28px;
@@ -1695,32 +1693,17 @@ body{ padding:10mm; }
   letter-spacing:.03em;
   word-break:break-all;
 }
-.kanpe-song{
-  color:#FFD700;
-}
-.kanpe-mc{
-  color:#FF4444;
-}
-.kanpe-note{
-  font-size:20px;
-  font-weight:700;
-  color:#aaa;
-  margin-left:8px;
-}
-.kanpe-ver{
-  display:inline;
-  font-size:16px;
-  font-weight:700;
-  color:#FFA500;
-  margin-right:4px;
-}
+.kanpe-song{ color:#FFD700; }
+.kanpe-mc{ color:#FF4444; }
+.kanpe-note{ font-size:20px; font-weight:700; color:#aaa; margin-left:8px; }
+.kanpe-ver{ display:inline; font-size:16px; font-weight:700; color:#FFA500; margin-right:4px; }
 @media print{
   html,body{ background:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 }
 </style>
 </head>
 <body>
-${headerHtml}
+<button class="back-btn" onclick="window.close()">← 戻る</button>
 <div class="kanpe-list">${rows}</div>
 </body>
 </html>`);

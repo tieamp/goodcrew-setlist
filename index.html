@@ -753,6 +753,8 @@ function renderSetlist(){
             <option value="続けて" ${item.kikkake==='続けて'?'selected':''} class="cd-only" style="display:none;">続けて</option>
             <option value="" ${!item.kikkake?'selected':''}>―</option>
           </select>
+          <input type="text" class="onkyo-edit-input" data-i="${i}" placeholder="音響要望" value="${(item.onkyo||'').replace(/"/g,'&quot;')}">
+          <input type="text" class="light-edit-input" data-i="${i}" placeholder="照明要望" value="${(item.light||'').replace(/"/g,'&quot;')}">
           <input type="text" class="custom-time-input" data-i="${i}" placeholder="0:00" value="${item.time?toMMSS(item.time):''}" title="時間を入力(例:3:30)">
           <input type="text" class="remark-input" data-i="${i}" placeholder="備考" value="${(item.remark||'').replace(/"/g,'&quot;')}">
           <button data-i="${i}" title="削除">×</button>
@@ -779,6 +781,14 @@ function renderSetlist(){
         slot.querySelector('.remark-input').addEventListener('click', e=> e.stopPropagation());
         slot.querySelector('.remark-input').addEventListener('input', (e)=>{
           setlist[+e.target.dataset.i].remark = e.target.value;
+        });
+        slot.querySelector('.onkyo-edit-input').addEventListener('click', e=> e.stopPropagation());
+        slot.querySelector('.onkyo-edit-input').addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].onkyo = e.target.value;
+        });
+        slot.querySelector('.light-edit-input').addEventListener('click', e=> e.stopPropagation());
+        slot.querySelector('.light-edit-input').addEventListener('input', (e)=>{
+          setlist[+e.target.dataset.i].light = e.target.value;
         });
         // ドラッグ（PC）
         slot.addEventListener('dragstart', (e)=>{ dragIndex = i; e.dataTransfer.effectAllowed='move'; });

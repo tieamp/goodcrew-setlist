@@ -1642,7 +1642,7 @@ document.getElementById('kanpeBtn').addEventListener('click', ()=>{
       if(base.startsWith('ドラムループ/')){ ver='ドラムループ'; base=base.slice('ドラムループ/'.length); }
       else if(base.startsWith('イントロ/')){ ver='イントロ'; base=base.slice('イントロ/'.length); }
       if(base.endsWith('【ショート】')){ ver=(ver?ver+' / ':'')+'ショート'; base=base.slice(0,-6); }
-      const verHtml = ver ? `<div class="kanpe-ver">[${ver}]</div>` : '';
+      const verHtml = ver ? `<span class="kanpe-ver">[${ver}]</span> ` : '';
       const kik = item.kikkake ? `（${item.kikkake}）` : '';
       const note = item.remark ? `<span class="kanpe-note">　${escapeHtml(item.remark)}</span>` : '';
       rows += `<div class="kanpe-row kanpe-song">${verHtml}${escapeHtml(base)}${escapeHtml(kik)}${note}</div>`;
@@ -1708,12 +1708,11 @@ body{ padding:10mm; }
   margin-left:8px;
 }
 .kanpe-ver{
-  display:block;
-  font-size:14px;
+  display:inline;
+  font-size:16px;
   font-weight:700;
   color:#FFA500;
-  margin-bottom:2px;
-  line-height:1;
+  margin-right:4px;
 }
 @media print{
   html,body{ background:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }

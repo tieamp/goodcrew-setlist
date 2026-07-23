@@ -459,6 +459,7 @@
       <button class="btn secondary" id="downloadPrintBtn" style="display:none;">⬇ 印刷用HTMLを保存</button>
       <button class="btn" id="textGenBtn">テキスト出力</button>
       <button class="btn secondary" id="excelBtn">📊 Excel出力</button>
+      <button class="btn secondary" id="kanpeBtn">📋 カンペ出力</button>
     </div>
     <div id="saveMsg" style="font-size:11px;color:var(--green);margin-top:6px;display:none;"></div>
 
@@ -836,6 +837,8 @@ function renderSetlist(){
       // MCは手動で時間を入力できるinputを表示
       const mcTimeHtml = item.type==='mc' ? `
         <input type="text" class="mc-time-input" data-i="${i}" value="${toMMSS(item.time)}" title="時間を手入力(例:2:30)">` : '';
+      const mcRemarkHtml = item.type==='mc' ? `
+        <input type="text" class="remark-input" data-i="${i}" placeholder="補足メモ（例: オープニング / 意気込み）" value="${(item.remark||'').replace(/"/g,'&quot;')}" style="flex:1 1 160px;min-width:100px;">` : '';
       const onkyoHtml = item.type==='song' ? `
         <input type="text" class="onkyo-edit-input" data-i="${i}" placeholder="音響要望" value="${(item.onkyo||'').replace(/"/g,'&quot;')}" title="音響要望（編集可）">` : '';
       const lightHtml = item.type==='song' ? `
@@ -853,6 +856,7 @@ function renderSetlist(){
         ${lightHtml}
         ${remarkHtml}
         ${mcTimeHtml}
+        ${mcRemarkHtml}
         ${lockBtnHtml}
         <div class="time">${item.type==='song'?toMMSS(item.time):''}</div>
         <button data-i="${i}" title="削除">×</button>
@@ -1622,6 +1626,66 @@ function autoFitTableText(){
 }
 window.fitAndPrintReady = function(){ autoFitTableText(); };
 `;
+
+document.getElementById('kanpeBtn').addEventListener('click', ()=>{
+  const date      = document.getElementById('eventDate').value;
+  const venue     = document.getElementById('venueName').value.trim();
+  const eventName = document.getElementById('eventName').value.trim();
+  const dateStr   = date ? (()=>{ const p=date.split('-'); return `${+p[1]}/${+p[2]}`; })() : '';
+
+  let items = [];
+  setlist.forEach((item, idx)=>{
+    if(item.type==='song' || item.type==='custom'){
+      const kik = item.kikkake ? `（${item.kikkake}）` : '';
+      const note = item.remark ? `　※${item.remark}` : '';
+      items.push({text:`${item.t}${kik}${note}`, type:'song', n: idx+1});
+    } else if(item.type==='mc'){
+      const memo = item.remark ? `（${item.remark}）` : '';
+      items.push({text:`MC${memo}`, type:'mc', n: idx+1});
+    }
+  });
+  if(useExitMC) items.push({text:'退場MC', type:'exit', n: setlist.length+1});
+
+  const rows = items.map(it=>{
+    const cls = it.type==='mc'||it.type==='exit' ? 'kanpe-mc' : 'kanpe-song';
+    return `<div class="kanpe-row ${cls}"><span class="kanpe-text">${escapeHtml(it.text)}</span></div>`;
+  }).join('');
+
+  const header = [dateStr, venue, eventName].filter(Boolean).join('　');
+
+  const html = `
+  <div class="kanpe-doc">
+    ${header ? `<div class="kanpe-header">${escapeHtml(header)}</div>` : ''}
+    <div class="kanpe-list">${rows}</div>
+  </div>`;
+
+  const styles = Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('');
+  const win = window.open('', '_blank');
+  if(!win){ alert('ポップアップがブロックされています。許可してから再度お試しください。'); return; }
+  win.document.open();
+  win.document.write(`<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>カンペ</title>
+${styles}
+<style>
+body{ margin:0; padding:12px; background:#fff; color:#111; font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; }
+@page{ size:A4 portrait; margin:12mm; }
+.kanpe-doc{ max-width:100%; }
+.kanpe-header{ font-size:15px; font-weight:700; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #111; }
+.kanpe-list{ display:flex; flex-direction:column; gap:4px; }
+.kanpe-row{ padding:8px 12px; border-radius:6px; font-size:16px; line-height:1.4; }
+.kanpe-song{ background:#fff; border-left:4px solid #111; }
+.kanpe-mc{ background:#f0f0f0; border-left:4px solid #888; font-weight:700; }
+.kanpe-text{ word-break:break-all; }
+</style>
+</head>
+<body>${html}</body>
+</html>`);
+  win.document.close();
+  setTimeout(()=>{ try{ win.focus(); win.print(); }catch(e){} }, 500);
+});
 
 document.getElementById('printBtn').addEventListener('click', ()=>{
   const content = document.getElementById('outputWrap').innerHTML;

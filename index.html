@@ -456,7 +456,7 @@
       <button class="btn secondary" id="resetBtn">リセット</button>
       <button class="btn" id="genBtn">PDF出力</button>
       <button class="btn secondary" id="printBtn" style="display:none;">🖨 印刷／PDF保存</button>
-      <button class="btn secondary" id="downloadPrintBtn" style="display:none;">⬇ 印刷用HTMLを保存</button>
+
       <button class="btn" id="textGenBtn">テキスト出力</button>
       <button class="btn secondary" id="excelBtn">📊 Excel出力</button>
       <button class="btn secondary" id="kanpeBtn">📋 カンペ出力</button>
@@ -1462,7 +1462,7 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   document.getElementById('outputWrap').innerHTML = '';
   document.getElementById('textOutputWrap').style.display = 'none';
   document.getElementById('printBtn').style.display = 'none';
-  document.getElementById('downloadPrintBtn').style.display = 'none';
+
   renderAll();
 });
 
@@ -1589,7 +1589,7 @@ document.getElementById('genBtn').addEventListener('click', ()=>{
 
   document.getElementById('outputWrap').innerHTML = html;
   document.getElementById('printBtn').style.display = 'inline-block';
-  document.getElementById('downloadPrintBtn').style.display = 'inline-block';
+
   autoFitTableText();
 });
 
@@ -1633,33 +1633,31 @@ document.getElementById('kanpeBtn').addEventListener('click', ()=>{
   const eventName = document.getElementById('eventName').value.trim();
   const dateStr   = date ? (()=>{ const p=date.split('-'); return `${+p[1]}/${+p[2]}`; })() : '';
 
-  let items = [];
-  setlist.forEach((item, idx)=>{
+  let rows = '';
+  setlist.forEach(item=>{
     if(item.type==='song' || item.type==='custom'){
+      // バージョン名を抽出してタイトル横に表示
+      let base = item.t;
+      let ver = '';
+      if(base.startsWith('ドラムループ/')){ ver='ドラムループ'; base=base.slice('ドラムループ/'.length); }
+      else if(base.startsWith('イントロ/')){ ver='イントロ'; base=base.slice('イントロ/'.length); }
+      if(base.endsWith('【ショート】')){ ver=(ver?ver+' / ':'')+'ショート'; base=base.slice(0,-6); }
+      const verHtml = ver ? `<span class="kanpe-ver">[${ver}]</span>` : '';
       const kik = item.kikkake ? `（${item.kikkake}）` : '';
-      const note = item.remark ? `　※${item.remark}` : '';
-      items.push({text:`${item.t}${kik}${note}`, type:'song', n: idx+1});
+      const note = item.remark ? `　<span class="kanpe-note">${escapeHtml(item.remark)}</span>` : '';
+      rows += `<div class="kanpe-row kanpe-song">${escapeHtml(base)}${verHtml}${escapeHtml(kik)}${note}</div>`;
     } else if(item.type==='mc'){
       const memo = item.remark ? `（${item.remark}）` : '';
-      items.push({text:`MC${memo}`, type:'mc', n: idx+1});
+      rows += `<div class="kanpe-row kanpe-mc">MC${escapeHtml(memo)}</div>`;
     }
   });
-  if(useExitMC) items.push({text:'退場MC', type:'exit', n: setlist.length+1});
+  if(useExitMC) rows += `<div class="kanpe-row kanpe-mc">退場MC</div>`;
 
-  const rows = items.map(it=>{
-    const cls = it.type==='mc'||it.type==='exit' ? 'kanpe-mc' : 'kanpe-song';
-    return `<div class="kanpe-row ${cls}"><span class="kanpe-text">${escapeHtml(it.text)}</span></div>`;
-  }).join('');
+  const headerParts = [dateStr, venue, eventName].filter(Boolean);
+  const headerHtml = headerParts.length
+    ? `<div class="kanpe-header">${headerParts.map(escapeHtml).join('　')}</div>`
+    : '';
 
-  const header = [dateStr, venue, eventName].filter(Boolean).join('　');
-
-  const html = `
-  <div class="kanpe-doc">
-    ${header ? `<div class="kanpe-header">${escapeHtml(header)}</div>` : ''}
-    <div class="kanpe-list">${rows}</div>
-  </div>`;
-
-  const styles = Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('');
   const win = window.open('', '_blank');
   if(!win){ alert('ポップアップがブロックされています。許可してから再度お試しください。'); return; }
   win.document.open();
@@ -1668,23 +1666,66 @@ document.getElementById('kanpeBtn').addEventListener('click', ()=>{
 <head>
 <meta charset="UTF-8">
 <title>カンペ</title>
-${styles}
 <style>
-body{ margin:0; padding:12px; background:#fff; color:#111; font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; }
-@page{ size:A4 portrait; margin:12mm; }
-.kanpe-doc{ max-width:100%; }
-.kanpe-header{ font-size:15px; font-weight:700; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #111; }
-.kanpe-list{ display:flex; flex-direction:column; gap:4px; }
-.kanpe-row{ padding:8px 12px; border-radius:6px; font-size:16px; line-height:1.4; }
-.kanpe-song{ background:#fff; border-left:4px solid #111; }
-.kanpe-mc{ background:#f0f0f0; border-left:4px solid #888; font-weight:700; }
-.kanpe-text{ word-break:break-all; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+html, body{
+  background:#000;
+  color:#fff;
+  font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+  min-height:100%;
+}
+@page{ size:A4 portrait; margin:8mm; }
+body{ padding:10mm; }
+.kanpe-header{
+  font-size:18px;
+  font-weight:900;
+  color:#fff;
+  border-bottom:3px solid #555;
+  padding-bottom:6px;
+  margin-bottom:12px;
+  letter-spacing:.05em;
+}
+.kanpe-list{ display:flex; flex-direction:column; gap:6px; }
+.kanpe-row{
+  font-size:28px;
+  font-weight:900;
+  padding:8px 14px;
+  border-radius:6px;
+  line-height:1.3;
+  letter-spacing:.03em;
+  word-break:break-all;
+}
+.kanpe-song{
+  color:#FFD700;
+}
+.kanpe-mc{
+  color:#FF4444;
+}
+.kanpe-note{
+  font-size:20px;
+  font-weight:700;
+  color:#aaa;
+  margin-left:8px;
+}
+.kanpe-ver{
+  font-size:20px;
+  font-weight:700;
+  color:#FFA500;
+  margin-left:10px;
+  vertical-align:middle;
+}
+@media print{
+  html,body{ background:#000 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+}
 </style>
 </head>
-<body>${html}</body>
+<body>
+${headerHtml}
+<div class="kanpe-list">${rows}</div>
+</body>
 </html>`);
   win.document.close();
-  setTimeout(()=>{ try{ win.focus(); win.print(); }catch(e){} }, 500);
+  setTimeout(()=>{ try{ win.focus(); win.print(); }catch(e){} }, 400);
 });
 
 document.getElementById('printBtn').addEventListener('click', ()=>{
@@ -1730,40 +1771,6 @@ document.getElementById('printBtn').addEventListener('click', ()=>{
   setTimeout(runAndPrint, 700);
 });
 
-document.getElementById('downloadPrintBtn').addEventListener('click', ()=>{
-  const content = document.getElementById('outputWrap').innerHTML;
-  if(!content.trim()){ return; }
-  const styles = Array.from(document.querySelectorAll('style')).map(s=>s.outerHTML).join('\n');
-  const fullHtml = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>セットリスト</title>
-${styles}
-<style>
-  body{ margin:0; padding:8px; background:#fff; height:auto !important; overflow:hidden !important; }
-  html{ height:auto !important; overflow:hidden !important; }
-</style>
-</head>
-<body>${content}
-<script>
-${AUTOFIT_SCRIPT}
-window.addEventListener('load', function(){ if(window.fitAndPrintReady) fitAndPrintReady(); });
-<\/script>
-</body>
-</html>`;
-  const blob = new Blob([fullHtml], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const date = document.getElementById('eventDate').value || 'setlist';
-  a.download = `グットクルー_セトリ_${date}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  alert('印刷用HTMLをダウンロードしました。\nダウンロードしたファイルをブラウザで開き、ブラウザの印刷機能（Ctrl+P / Cmd+P）からPDF保存・印刷してください。');
-});
 
 document.getElementById('textGenBtn').addEventListener('click', ()=>{
   const date = document.getElementById('eventDate').value;

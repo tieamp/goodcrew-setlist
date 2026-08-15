@@ -602,6 +602,12 @@ let EXIT_MC_SEC = 30;
 let seLocked = false;   // 手動設定時はtrue→逆算スキップ
 let exitLocked = false;
 
+function getDefaultKikkake(afterIndex){
+  // afterIndex: 追加しようとしている位置の直前のインデックス
+  const prev = setlist[afterIndex];
+  return (prev && prev.type === 'mc') ? '曲振り' : '音先';
+}
+
 function usedBaseTitles(){
   return new Set(setlist.filter(x=>x.type==='song').map(x=>baseTitle(x.t)));
 }
@@ -656,7 +662,7 @@ function renderSongList(){
         `;
         row.addEventListener('click', ()=>{
           if(isUsed) return;
-          setlist.push({type:'song', t:song.t, time:toSec(song.time), light:song.light||'', onkyo:song.onkyo||'', kikkake:'音先', remark:'', id:Date.now()+Math.random()});
+          setlist.push({type:'song', t:song.t, time:toSec(song.time), light:song.light||'', onkyo:song.onkyo||'', kikkake:getDefaultKikkake(setlist.length-1), remark:'', id:Date.now()+Math.random()});
           renderAll();
         });
         rows.appendChild(row);
@@ -1133,7 +1139,10 @@ function autoGenerate(){
     for(let seg=0; seg<segments; seg++){
       let count = base2 + (seg < extra ? 1 : 0);
       for(let k=0;k<count;k++){
-        setlist.push(selected[songIdx++]);
+        const s = selected[songIdx++];
+        // セグメントの先頭（MC直後）は曲振り、それ以外は音先
+        if(seg > 0 && k === 0) s.kikkake = '曲振り';
+        setlist.push(s);
       }
       if(seg < mcCount){
         setlist.push({type:'mc', t:'MC', time:mcTimes[seg], remark:'', onkyo:'', light:'', id:Date.now()+Math.random()});
@@ -1353,9 +1362,13 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
   const newSetlist = [];
   const usedBase = new Set();
 
+  let afterMc = false; // MC直後フラグ
+
   lines.forEach(line=>{
     // 合計タイム行・SE行・退場MC行はスキップ
     if(/^合計タイム|^登場SE|^退場MC/.test(line)) return;
+    // SEと認識できる行もスキップ（「SE」単体や「【SE】」など）
+    if(/^SE\b|^【\s*SE\s*】/.test(line.trim())) return;
     // 日付行をスキップ（例: 7/22, 2026/7/22）
     if(/^\d{1,4}\/\d{1,2}(\/\d{1,2})?$/.test(line.trim())) return;
     // 空行スキップ
@@ -1366,15 +1379,19 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
       const timeMatch = line.match(/(\d+):(\d{2})/);
       const time = timeMatch ? (+timeMatch[1]*60 + +timeMatch[2]) : 120;
       const locked = !!timeMatch;
-      // 括弧内の補足メモを抽出（例: MC（オープニング / 意気込み））
       const remarkMatch = line.match(/[（(]([^）)]+)[）)]/);
       const remark = remarkMatch ? remarkMatch[1].trim() : '';
       newSetlist.push({type:'mc', t:'MC', time, locked, remark, onkyo:'', light:'', id:Date.now()+Math.random()});
+      afterMc = true; // 次の曲は曲振りをデフォルトに
       return;
     }
 
     const { title, kikkake, time } = extractTitleKikkakeTime(line);
     if(!title) return;
+
+    // MC直後でkikkake未指定なら「曲振り」をデフォルト
+    const defaultKikkake = afterMc ? '曲振り' : '音先';
+    afterMc = false;
 
     const song = findSongByText(title);
     if(song){
@@ -1383,21 +1400,18 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
       usedBase.add(base);
       newSetlist.push({
         type:'song', t:song.t, time:toSec(song.time),
-        light:song.light||'', onkyo:song.onkyo||'', kikkake: kikkake || '音先', remark:'',
+        light:song.light||'', onkyo:song.onkyo||'', kikkake: kikkake || defaultKikkake, remark:'',
         id:Date.now()+Math.random()
       });
     } else {
-      // ナンバリングあり、またはタイム/きっかけが含まれる行のみカスタム曲として追加
-      // （会場名・イベント名などの単純なテキスト行はスキップ）
       const hasNumber = /^[①-⑳㉑-㊿]|^[\(（]?\d+[\)）\.．]/.test(line.trim());
       if(hasNumber || time || kikkake){
         newSetlist.push({
           type:'custom', t:title, time: time || 0,
-          kikkake: kikkake || '音先', remark:'', light:'', onkyo:'',
+          kikkake: kikkake || defaultKikkake, remark:'', light:'', onkyo:'',
           id:Date.now()+Math.random()
         });
       }
-      // ナンバリングも時間もきっかけもない行（会場名など）は無視
     }
   });
 
@@ -1412,7 +1426,7 @@ document.getElementById('addMcBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('addCustomBtn').addEventListener('click', ()=>{
-  setlist.push({type:'custom', t:'', time:0, kikkake:'音先', remark:'', light:'', onkyo:'', id:Date.now()+Math.random()});
+  setlist.push({type:'custom', t:'', time:0, kikkake:getDefaultKikkake(setlist.length-1), remark:'', light:'', onkyo:'', id:Date.now()+Math.random()});
   renderAll();
 });
 

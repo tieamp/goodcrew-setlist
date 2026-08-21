@@ -1762,9 +1762,17 @@ document.getElementById('printBtn').addEventListener('click', ()=>{
       <style>
         body{ margin:0; padding:8px; background:#fff; height:auto !important; overflow:hidden !important; }
         html{ height:auto !important; overflow:hidden !important; }
+        .pdf-back-btn{
+          display:inline-block; margin-bottom:10px;
+          padding:8px 18px; background:#333; color:#fff;
+          border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer;
+        }
+        @media print{ .pdf-back-btn{ display:none !important; } }
       </style>
     </head>
-    <body>${content}
+    <body>
+    <button class="pdf-back-btn" onclick="window.close()">← 戻る</button>
+    ${content}
     <script>${AUTOFIT_SCRIPT}<\/script>
     </body>
     </html>

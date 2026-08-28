@@ -1362,6 +1362,45 @@ document.getElementById('buildFromTextBtn').addEventListener('click', ()=>{
   const newSetlist = [];
   const usedBase = new Set();
 
+  // ─── ヘッダー行の解析（曲/MC/SEが来る前の行を日付・会場名・イベント名として解析）
+  const isSongOrMcLine = (l)=>{
+    if(/^合計タイム|^登場SE|^退場MC|^SE\b|^【\s*SE\s*】/.test(l)) return true;
+    if(/^MC\b/i.test(l)) return true;
+    if(/^[①-⑳㉑-㊿]/.test(l)) return true;
+    if(/^[\(（]?\d+[\)）\.．]/.test(l)) return true;
+    return false;
+  };
+  const DATE_RE = /^(\d{4}[\/\-])?(\d{1,2})[\/\-](\d{1,2})$/;
+
+  let headerLines = [];
+  for(const l of lines){
+    if(isSongOrMcLine(l)) break;
+    headerLines.push(l);
+  }
+
+  // ヘッダーから日付・会場名・イベント名を抽出
+  const dateEl    = document.getElementById('eventDate');
+  const venueEl   = document.getElementById('venueName');
+  const eventEl   = document.getElementById('eventName');
+  let nonDateHeaders = [];
+
+  headerLines.forEach(l=>{
+    const m = l.match(DATE_RE);
+    if(m){
+      // 日付: YYYY/M/D or M/D
+      const year  = m[1] ? parseInt(m[1]) : new Date().getFullYear();
+      const month = parseInt(m[2]);
+      const day   = parseInt(m[3]);
+      const pad   = n=> String(n).padStart(2,'0');
+      dateEl.value = `${year}-${pad(month)}-${pad(day)}`;
+    } else {
+      nonDateHeaders.push(l);
+    }
+  });
+
+  if(nonDateHeaders.length >= 1) venueEl.value  = nonDateHeaders[0];
+  if(nonDateHeaders.length >= 2) eventEl.value  = nonDateHeaders[1];
+
   let afterMc = false; // MC直後フラグ
 
   lines.forEach(line=>{

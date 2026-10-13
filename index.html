@@ -461,7 +461,32 @@ MC
     <div class="title" style="">登場SE</div>
     <input type="text" class="mc-time-input" id="seTimeInput" value="1:00" title="時間を手入力(例:1:00)">
     <button class="toggle-fixed-btn active" id="toggleSEBtn">使用中</button>
-  </div><div class="empty">出演時間を入力して自動生成するか、下の楽曲をクリックして追加してください</div><div class="slot fixed">
+  </div><div class="slot" draggable="true" data-i="0">
+        <span class="drag-handle" title="長押しして並び替え">⠿</span>
+        <div class="idx">1</div>
+        <div class="title">グッとくるサマー</div>
+        
+        <select class="kikkake-select" data-i="0">
+          <option value="音先" selected="">音先</option>
+          <option value="曲振り">曲振り</option>
+          <option value="板付">板付</option>
+          <option value="続けて" class="cd-only" style="display:none;">続けて</option>
+          <option value="">―</option>
+        </select>
+        
+        <input type="text" class="track-input" data-i="0" placeholder="TR." value="" title="CDトラック番号" style="display: none;">
+        
+        <input type="text" class="onkyo-edit-input" data-i="0" placeholder="音響要望" value="" title="音響要望（編集可）">
+        
+        <input type="text" class="light-edit-input" data-i="0" placeholder="照明要望" value="ポップ" title="照明要望（編集可）">
+        
+        <input type="text" class="remark-input" data-i="0" placeholder="備考" value="">
+        
+        
+        
+        <div class="time">4:15</div>
+        <button data-i="0" title="削除">×</button>
+      </div><div class="slot fixed">
     <div class="idx">MC</div>
     <div class="title" style="">退場MC</div>
     <input type="text" class="mc-time-input" id="exitTimeInput" value="0:30" title="時間を手入力(例:0:30)">
@@ -469,8 +494,8 @@ MC
   </div></div>
 
     <div class="summary">
-      <div>目標 <b id="targetDisp">25:00</b> ／ 残り <span id="remain" class="ng">23:30</span></div>
-      <div class="total" id="totalTime">1:30</div>
+      <div>目標 <b id="targetDisp">25:00</b> ／ 残り <span id="remain" class="ng">19:15</span></div>
+      <div class="total" id="totalTime">5:45</div>
     </div>
 
     <div class="actions">
@@ -501,7 +526,7 @@ MC
 
   <!-- 下：楽曲一覧 -->
   <div class="panel panel-songlist">
-    <h2>楽曲一覧<span id="songCount" style="color:var(--text-dim);font-weight:400;"> (43曲)</span></h2>
+    <h2>楽曲一覧<span id="songCount" style="color:var(--text-dim);font-weight:400;"> (44曲)</span></h2>
     <div class="legend">
       <span><span class="dot" style="background:#ff4f8b"></span>メイン曲</span>
       <span><span class="dot" style="background:#7b6fa0"></span>変化球曲</span>
@@ -522,20 +547,20 @@ MC
             <div class="song-meta">2:41</div>
           </span>
           
-        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row used">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">
             <div class="song-title">グッとくるサマー</div>
             <div class="song-meta">4:15</div>
           </span>
-          
-        </div><div class="song-row">
+          <span class="badge-used">採用済</span>
+        </div><div class="song-row used">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">
             <div class="song-title">グッとくるサマー【ショート】</div>
             <div class="song-meta">3:17</div>
           </span>
-          
+          <span class="badge-used">採用済</span>
         </div></div></div><div class="song-group"><div class="group-header">触発エマージェンシー！（3バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">
@@ -634,10 +659,10 @@ MC
             <div class="song-meta">1:26</div>
           </span>
           
-        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー【ショート＆ループ】<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+        </div></div></div><div class="song-group"><div class="group-header">ループ/グッとくるサマー<span class="gline"></span></div><div class="group-rows"><div class="song-row">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">
-            <div class="song-title">グッとくるサマー【ショート＆ループ】</div>
+            <div class="song-title">ループ/グッとくるサマー【ショート】</div>
             <div class="song-meta">3:47</div>
           </span>
           
@@ -811,6 +836,13 @@ MC
             <div class="song-meta">4:23</div>
           </span>
           
+        </div></div></div><div class="song-group"><div class="group-header">Aim High<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">Aim High</div>
+            <div class="song-meta">3:15</div>
+          </span>
+          
         </div></div></div></div></div>
   </div>
 
@@ -829,7 +861,7 @@ MC
       <button class="btn secondary" id="dbResetBtn">↩ リセット（初期データに戻す）</button>
       <button class="btn" id="dbExportBtn" style="background:var(--green);color:#000;">⬇ HTMLをエクスポート</button>
     </div>
-    <div id="dbSaveMsg" style="font-size: 11px; color: var(--green); margin-bottom: 8px; display: block;">✓ 保存しました（次回ロード時も反映されます）</div>
+    <div id="dbSaveMsg" style="font-size: 11px; color: var(--green); margin-bottom: 8px; display: none;">✓ 保存しました（次回ロード時も反映されます）</div>
 
     <div style="overflow-x:auto;">
       <table id="dbTable" style="width:100%;border-collapse:collapse;font-size:12px;">
@@ -852,6 +884,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="0" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="0" data-f="light" value="エモロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="0" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="0" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="0" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="0" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="0">×</button></td>
@@ -861,6 +899,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="1" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="1" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="1" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="1" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="1" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="1" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="1">×</button></td>
@@ -870,6 +914,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="2" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="2" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="2" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="2" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="2" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="2" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="2">×</button></td>
@@ -879,6 +929,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="3" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="3" data-f="light" value="青春ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="3" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="3" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="3" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="3" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="3">×</button></td>
@@ -888,6 +944,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="4" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="4" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="4" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="4" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="4" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="4" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="4">×</button></td>
@@ -897,6 +959,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="5" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="5" data-f="light" value="ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="5" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="5" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="5" data-f="henkyoku" checked=""></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="5" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="5">×</button></td>
@@ -906,6 +974,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="6" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="6" data-f="light" value="ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="6" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="6" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="6" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="6" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="6">×</button></td>
@@ -915,6 +989,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="7" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="7" data-f="light" value="エモロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="7" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="7" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="7" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="7" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="7">×</button></td>
@@ -924,6 +1004,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="8" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="8" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="8" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="8" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="8" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="8" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="8">×</button></td>
@@ -933,6 +1019,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="9" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="9" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="9" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="9" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="9" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="9" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="9">×</button></td>
@@ -942,6 +1034,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="10" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="10" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="10" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="10" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="10" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="10" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="10">×</button></td>
@@ -951,6 +1049,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="11" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="11" data-f="light" value="青春ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="11" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="11" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="11" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="11" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="11">×</button></td>
@@ -960,6 +1064,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="12" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="12" data-f="light" value="ポップ、サビでミラーボール(あれば)" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="12" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="12" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="12" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="12" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="12">×</button></td>
@@ -969,6 +1079,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="13" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="13" data-f="light" value="クール、サビ：ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="13" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="13" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="13" data-f="henkyoku" checked=""></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="13" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="13">×</button></td>
@@ -978,6 +1094,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="14" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="14" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="14" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="14" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="14" data-f="henkyoku" checked=""></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="14" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="14">×</button></td>
@@ -987,6 +1109,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="15" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="15" data-f="light" value="ポップ＆クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="15" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="15" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="15" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="15" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="15">×</button></td>
@@ -996,6 +1124,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="16" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="16" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="16" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="16" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="16" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="16" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="16">×</button></td>
@@ -1005,6 +1139,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="17" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="17" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="17" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="17" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="17" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="17" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="17">×</button></td>
@@ -1014,6 +1154,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="18" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="18" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="18" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="18" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="18" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="18" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="18">×</button></td>
@@ -1023,6 +1169,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="19" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="19" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="19" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="19" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="19" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="19" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="19">×</button></td>
@@ -1032,6 +1184,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="20" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="20" data-f="light" value="ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="20" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="20" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="20" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="20" data-f="zeroprob" checked=""></td>
       <td style="text-align:center;"><button class="db-del" data-i="20">×</button></td>
@@ -1041,6 +1199,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="21" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="21" data-f="light" value="ロック、クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="21" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="21" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="21" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="21" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="21">×</button></td>
@@ -1050,6 +1214,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="22" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="22" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="22" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="22" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="22" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="22" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="22">×</button></td>
@@ -1059,6 +1229,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="23" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="23" data-f="light" value="ポップ＆クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="23" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="23" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="23" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="23" data-f="zeroprob" checked=""></td>
       <td style="text-align:center;"><button class="db-del" data-i="23">×</button></td>
@@ -1068,6 +1244,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="24" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="24" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="24" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="24" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="24" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="24" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="24">×</button></td>
@@ -1077,6 +1259,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="25" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="25" data-f="light" value="ロック/ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="25" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="25" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="25" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="25" data-f="zeroprob" checked=""></td>
       <td style="text-align:center;"><button class="db-del" data-i="25">×</button></td>
@@ -1086,6 +1274,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="26" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="26" data-f="light" value="ロック/ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="26" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="26" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="26" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="26" data-f="zeroprob" checked=""></td>
       <td style="text-align:center;"><button class="db-del" data-i="26">×</button></td>
@@ -1095,6 +1289,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="27" data-f="freq" value="1"></td>
       <td><input class="db-input" data-i="27" data-f="light" value="ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="27" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="27" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="27" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="27" data-f="zeroprob" checked=""></td>
       <td style="text-align:center;"><button class="db-del" data-i="27">×</button></td>
@@ -1104,6 +1304,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="28" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="28" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="28" data-f="onkyo" value="introにてドラム音をループさせます。その際煽りますのでリバーブを落としてください" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="28" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="28" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="28" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="28">×</button></td>
@@ -1113,6 +1319,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="29" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="29" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="29" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="29" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="29" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="29" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="29">×</button></td>
@@ -1122,6 +1334,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="30" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="30" data-f="light" value="ポップ＆クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="30" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="30" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="30" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="30" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="30">×</button></td>
@@ -1131,6 +1349,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="31" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="31" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="31" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="31" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="31" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="31" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="31">×</button></td>
@@ -1140,6 +1364,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="32" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="32" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="32" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="32" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="32" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="32" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="32">×</button></td>
@@ -1149,15 +1379,27 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="33" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="33" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="33" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="33" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="33" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="33" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="33">×</button></td>
     </tr><tr>
-      <td><input class="db-input" data-i="34" data-f="t" value="グッとくるサマー【ショート＆ループ】" style="min-width:160px;"></td>
+      <td><input class="db-input" data-i="34" data-f="t" value="ループ/グッとくるサマー【ショート】" style="min-width:160px;"></td>
       <td><input class="db-input db-time" data-i="34" data-f="time" value="3:47"></td>
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="34" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="34" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="34" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="34" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="34" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="34" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="34">×</button></td>
@@ -1167,6 +1409,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="35" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="35" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="35" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="35" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="35" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="35" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="35">×</button></td>
@@ -1176,6 +1424,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="36" data-f="freq" value="5"></td>
       <td><input class="db-input" data-i="36" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="36" data-f="onkyo" value="introにてドラム音をループさせます。その際煽りますのでリバーブを落としてください" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="36" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="36" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="36" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="36">×</button></td>
@@ -1185,6 +1439,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="37" data-f="freq" value="4"></td>
       <td><input class="db-input" data-i="37" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="37" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="37" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="37" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="37" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="37">×</button></td>
@@ -1194,6 +1454,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="38" data-f="freq" value="2"></td>
       <td><input class="db-input" data-i="38" data-f="light" value="ロック/クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="38" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="38" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="38" data-f="henkyoku" checked=""></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="38" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="38">×</button></td>
@@ -1203,6 +1469,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="39" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="39" data-f="light" value="ロック/クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="39" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="39" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="39" data-f="henkyoku" checked=""></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="39" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="39">×</button></td>
@@ -1212,6 +1484,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="40" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="40" data-f="light" value="ロック/クール" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="40" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="40" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="40" data-f="henkyoku" checked=""></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="40" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="40">×</button></td>
@@ -1221,6 +1499,12 @@ MC
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="41" data-f="freq" value="3"></td>
       <td><input class="db-input" data-i="41" data-f="light" value="ポップ" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="41" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="41" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="41" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="41" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="41">×</button></td>
@@ -1228,11 +1512,32 @@ MC
       <td><input class="db-input" data-i="42" data-f="t" value="DASH FOR MY DREAM" style="min-width:160px;"></td>
       <td><input class="db-input db-time" data-i="42" data-f="time" value="4:08"></td>
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="42" data-f="freq" value="4"></td>
-      <td><input class="db-input" data-i="42" data-f="light" value="ロック:A/Bメロ ポップ→エモサビ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="42" data-f="light" value="ロック:A/Bメロ→ポップ、サビ→エモーショナル" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="42" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="42" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="42" data-f="henkyoku"></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="42" data-f="zeroprob"></td>
       <td style="text-align:center;"><button class="db-del" data-i="42">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="43" data-f="t" value="新しい曲" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="43" data-f="time" value="3:30"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="43" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="43" data-f="light" value="" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="43" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="43" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          <option value="Anniversaryyyyy">Anniversaryyyyy</option><option value="BRAVE">BRAVE</option><option value="Because it">Because it</option><option value="Bye Bye Little Girl">Bye Bye Little Girl</option><option value="DASH FOR MY DREAM">DASH FOR MY DREAM</option><option value="ESCAPE">ESCAPE</option><option value="NEW AGE">NEW AGE</option><option value="Raise the Sail">Raise the Sail</option><option value="THE MOMENT">THE MOMENT</option><option value="URAMESHIYA">URAMESHIYA</option><option value="YEAH">YEAH</option><option value="youth">youth</option><option value="めっちゃいーじゃんぐる">めっちゃいーじゃんぐる</option><option value="やるときやるガール！">やるときやるガール！</option><option value="アオハルタイムライド">アオハルタイムライド</option><option value="オシャレマジック！">オシャレマジック！</option><option value="グッとくるサマー">グッとくるサマー</option><option value="グッドジャーニー">グッドジャーニー</option><option value="グッモーニン☆ジャンキー">グッモーニン☆ジャンキー</option><option value="ショコラッて♡パティシエール">ショコラッて♡パティシエール</option><option value="ストレリチア">ストレリチア</option><option value="フロントクラクション">フロントクラクション</option><option value="ラッキーラッシュ！">ラッキーラッシュ！</option><option value="ラブちゅちゅ宇Chu">ラブちゅちゅ宇Chu</option><option value="ループ/グッとくるサマー">ループ/グッとくるサマー</option><option value="夢見がち Sound &amp; Beat">夢見がち Sound &amp; Beat</option><option value="愛Sing">愛Sing</option><option value="新しい曲">新しい曲</option><option value="爆レスどきゅん♡">爆レスどきゅん♡</option><option value="触発エマージェンシー！">触発エマージェンシー！</option><option value="開港☆あっぱーらんどまーく">開港☆あっぱーらんどまーく</option>
+        </select>
+      </td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="43" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="43" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="43">×</button></td>
     </tr></tbody>
       </table>
     </div>
@@ -1292,10 +1597,10 @@ const DB = [
 const PRIORITY_BASE = ["NEW AGE","触発エマージェンシー！","Because it!!"];
 
 // 変化球曲として扱う基底タイトル（全バリエーションに適用）
-const HENKYOKU_BASE = new Set(["NEW AGE","Because it!!","Raise the Sail","URAMESHIYA"]);
+const HENKYOKU_BASE = new Set(["NEW AGE","Because it!!","Raise the Sail","URAMESHIYA","Aim High"]);
 
 // 自動生成で採用確率0%（手動のみで使用可能）な曲の基底タイトル
-const ZERO_PROB_BASE = new Set(["BRAVE","ESCAPE!","夢見がち Sound & Beat","Bye Bye Little Girl","フロントクラクション","ストレリチア"]);
+const ZERO_PROB_BASE = new Set(["BRAVE","ESCAPE!","夢見がち Sound & Beat","Bye Bye Little Girl","フロントクラクション","ストレリチア","Aim High"]);
 
 // 変化球曲の採用確率（7%）
 const HENKYOKU_PROB = 0.07;

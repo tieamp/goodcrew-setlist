@@ -501,6 +501,10 @@
     <h2 style="margin-top:0;">⚙ 楽曲・設定エディター</h2>
     <p style="color:var(--text-dim);font-size:12px;margin-bottom:12px;">変更はLocalStorageに保存されます。ページをリロードしても反映されます。「リセット」で初期データに戻せます。</p>
 
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:var(--text-dim);display:block;margin-bottom:4px;">📢 デフォルト中音リクエスト</label>
+      <textarea id="dbDefaultRequest" style="width:100%;min-height:48px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 9px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+    </div>
     <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn" id="dbAddSongBtn">＋ 曲を追加</button>
       <button class="btn secondary" id="dbSaveBtn">💾 保存</button>
@@ -1963,11 +1967,16 @@ const DB_STORAGE_KEY = 'goodcrew_db_custom';
     DB.splice(0, DB.length, ...parsed.songs);
     if(parsed.henkyoku){ HENKYOKU_BASE.clear(); parsed.henkyoku.forEach(b=> HENKYOKU_BASE.add(b)); }
     if(parsed.zeroProb){ ZERO_PROB_BASE.clear(); parsed.zeroProb.forEach(b=> ZERO_PROB_BASE.add(b)); }
+    if(parsed.defaultRequest != null){ const el = document.getElementById('generalRequest'); if(el) el.value = parsed.defaultRequest; }
     renderAll();
   }catch(e){}
 })();
 
 function renderDbEditor(){
+  // デフォルトリクエストを現在値で初期化
+  const reqEl = document.getElementById('dbDefaultRequest');
+  if(reqEl) reqEl.value = document.getElementById('generalRequest').value;
+
   const tbody = document.getElementById('dbTableBody');
   tbody.innerHTML = '';
   DB.forEach((song, i)=>{
@@ -2050,10 +2059,15 @@ document.getElementById('dbAddSongBtn').addEventListener('click', ()=>{
 // 保存
 document.getElementById('dbSaveBtn').addEventListener('click', ()=>{
   try{
+    // デフォルトリクエストをメイン画面に反映
+    const reqVal = document.getElementById('dbDefaultRequest').value;
+    document.getElementById('generalRequest').value = reqVal;
+
     const data = {
       songs: DB.map(s=>({...s})),
       henkyoku: [...HENKYOKU_BASE],
-      zeroProb: [...ZERO_PROB_BASE]
+      zeroProb: [...ZERO_PROB_BASE],
+      defaultRequest: reqVal
     };
     localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(data));
     const msg = document.getElementById('dbSaveMsg');
@@ -2093,6 +2107,13 @@ document.getElementById('dbExportBtn').addEventListener('click', ()=>{
     newHtml = newHtml.replace(
       /const ZERO_PROB_BASE = new Set\(\[[\s\S]*?\]\);/,
       `const ZERO_PROB_BASE = new Set(${zeroProbJson});`
+    );
+    // デフォルトリクエストを置き換え
+    const reqVal2 = document.getElementById('dbDefaultRequest').value;
+    const escapedReq = reqVal2.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\${/g,'\\${');
+    newHtml = newHtml.replace(
+      /(<textarea id="generalRequest"[^>]*>)([\s\S]*?)(<\/textarea>)/,
+      `$1${reqVal2.replace(/</g,'&lt;').replace(/>/g,'&gt;')}$3`
     );
 
     // ダウンロード

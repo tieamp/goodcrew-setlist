@@ -840,6 +840,7 @@ MC
             <th style="padding:6px 4px;text-align:center;white-space:nowrap;">頻度<br><span style="font-size:10px;font-weight:400;">1〜5</span></th>
             <th style="padding:6px 8px;text-align:left;white-space:nowrap;">照明要望</th>
             <th style="padding:6px 8px;text-align:left;white-space:nowrap;">音響要望</th>
+            <th style="padding:6px 8px;text-align:left;white-space:nowrap;">ベース曲<br><span style="font-size:10px;font-weight:400;">バリエーション元</span></th>
             <th style="padding:6px 4px;text-align:center;white-space:nowrap;">変化球</th>
             <th style="padding:6px 4px;text-align:center;white-space:nowrap;">手動のみ</th>
             <th style="padding:6px 4px;text-align:center;white-space:nowrap;">削除</th>
@@ -1346,7 +1347,11 @@ function toMMSS(sec){
 }
 // バリエーション同一曲判定用：タイトルから【ショート】や ドラムループ/ イントロ/ などを除いた基底名
 function baseTitle(t){
-  return t.replace(/ドラムループ\//,"").replace(/イントロ\//,"").replace(/【ショート】/,"").replace(/!+$/,"").trim();
+  // DBに明示的なbaseフィールドがあればそれを優先
+  const song = DB.find(s => s.t === t);
+  if(song && song.base) return song.base;
+  // なければ命名規則で自動判定
+  return t.replace(/ドラムループ\//,"").replace(/イントロ\//,"").replace(/【ショート】/,"").replace(/【ショート＆ループ】/,"").replace(/!+$/,"").trim();
 }
 
 let setlist = []; // {type:'song'|'mc', t, time(sec), id}
@@ -2689,12 +2694,26 @@ function renderDbEditor(){
     const isHen = HENKYOKU_BASE.has(base);
     const isZero = ZERO_PROB_BASE.has(base);
     const tr = document.createElement('tr');
+    // ベース曲ドロップダウン用の選択肢（命名規則で判定できる既存ベース曲 + 空）
+    const baseCandidates = [...new Set(DB.map(s => {
+      const auto = s.t.replace(/ドラムループ\//,"").replace(/イントロ\//,"").replace(/【ショート】/,"").replace(/【ショート＆ループ】/,"").replace(/!+$/,"").trim();
+      return auto;
+    }))].sort();
+    const baseOptions = baseCandidates.map(b =>
+      `<option value="${b.replace(/"/g,'&quot;')}" ${(song.base||'')=== b?'selected':''}>${b}</option>`
+    ).join('');
     tr.innerHTML = `
       <td><input class="db-input" data-i="${i}" data-f="t" value="${(song.t||'').replace(/"/g,'&quot;')}" style="min-width:160px;"></td>
       <td><input class="db-input db-time" data-i="${i}" data-f="time" value="${song.time||''}"></td>
       <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="${i}" data-f="freq" value="${song.freq||1}"></td>
       <td><input class="db-input" data-i="${i}" data-f="light" value="${(song.light||'').replace(/"/g,'&quot;')}" style="min-width:100px;"></td>
       <td><input class="db-input" data-i="${i}" data-f="onkyo" value="${(song.onkyo||'').replace(/"/g,'&quot;')}" style="min-width:120px;"></td>
+      <td>
+        <select class="db-input db-base-sel" data-i="${i}" style="min-width:130px;">
+          <option value="">（自動判定）</option>
+          ${baseOptions}
+        </select>
+      </td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="${i}" data-f="henkyoku" ${isHen?'checked':''}></td>
       <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="${i}" data-f="zeroprob" ${isZero?'checked':''}></td>
       <td style="text-align:center;"><button class="db-del" data-i="${i}">×</button></td>
@@ -2711,6 +2730,15 @@ function renderDbEditor(){
       else DB[idx][field] = e.target.value;
     });
     inp.addEventListener('click', e=> e.stopPropagation());
+  });
+
+  // イベント: ベース曲ドロップダウン
+  tbody.querySelectorAll('.db-base-sel').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const idx = +e.target.dataset.i;
+      DB[idx].base = e.target.value || undefined;
+    });
+    sel.addEventListener('click', e=> e.stopPropagation());
   });
 
   // イベント: チェックボックス

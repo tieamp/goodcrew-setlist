@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
+<html lang="ja"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>セトリビルダー</title>
@@ -422,21 +420,21 @@
       </label>
       <label>音出し
         <select id="onkyoMethod" style="width:80px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 8px;font-size:13px;">
-          <option value="PC" selected>PC</option>
+          <option value="PC" selected="">PC</option>
           <option value="CD">CD</option>
         </select>
       </label>
       <label>出力端子
         <select id="outputJack" style="width:110px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 8px;font-size:13px;">
           <option value="">―</option>
-          <option value="キャノン" selected>キャノン</option>
+          <option value="キャノン" selected="">キャノン</option>
           <option value="ミニステ">ミニステ</option>
         </select>
       </label>
     </div>
     <div class="controls">
       <label style="flex:1;">音響・照明への要望（任意）
-        <textarea id="generalRequest" style="width:100%;min-height:50px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 9px;font-size:13px;font-family:inherit;resize:vertical;">中音はオケよりもボーカルを若干あげてください</textarea>
+        <textarea id="generalRequest" style="width:100%;min-height:50px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 9px;font-size:13px;font-family:inherit;resize:vertical;">オケ/ボーカルは外音と同等のバランスでお願いします</textarea>
       </label>
     </div>
     <div class="actions" style="margin-top:0;">
@@ -445,7 +443,12 @@
     </div>
 
     <div id="textInputWrap" style="margin-top:10px;display:none;">
-      <textarea id="textInput" placeholder="曲名を1行に1曲ずつ入力してください（MCを入れたい場所には「MC」とだけ書いてください）&#10;例）&#10;やるときやるガール！&#10;グッモーニン☆ジャンキー&#10;MC&#10;グッとくるサマー" style="min-height:140px;"></textarea>
+      <textarea id="textInput" placeholder="曲名を1行に1曲ずつ入力してください（MCを入れたい場所には「MC」とだけ書いてください）
+例）
+やるときやるガール！
+グッモーニン☆ジャンキー
+MC
+グッとくるサマー" style="min-height:140px;"></textarea>
       <div class="actions" style="margin-top:8px;">
         <button class="btn" id="buildFromTextBtn">このリストでセトリを作成</button>
       </div>
@@ -453,11 +456,21 @@
     </div>
 
     <h2 style="margin-top:18px;">セットリスト</h2>
-    <div class="setlist" id="setlist"></div>
+    <div class="setlist" id="setlist"><div class="slot fixed">
+    <div class="idx">SE</div>
+    <div class="title" style="">登場SE</div>
+    <input type="text" class="mc-time-input" id="seTimeInput" value="1:00" title="時間を手入力(例:1:00)">
+    <button class="toggle-fixed-btn active" id="toggleSEBtn">使用中</button>
+  </div><div class="empty">出演時間を入力して自動生成するか、下の楽曲をクリックして追加してください</div><div class="slot fixed">
+    <div class="idx">MC</div>
+    <div class="title" style="">退場MC</div>
+    <input type="text" class="mc-time-input" id="exitTimeInput" value="0:30" title="時間を手入力(例:0:30)">
+    <button class="toggle-fixed-btn active" id="toggleExitBtn">使用中</button>
+  </div></div>
 
     <div class="summary">
-      <div>目標 <b id="targetDisp">25:00</b> ／ 残り <span id="remain">25:00</span></div>
-      <div class="total" id="totalTime">0:00</div>
+      <div>目標 <b id="targetDisp">25:00</b> ／ 残り <span id="remain" class="ng">23:30</span></div>
+      <div class="total" id="totalTime">1:30</div>
     </div>
 
     <div class="actions">
@@ -488,16 +501,321 @@
 
   <!-- 下：楽曲一覧 -->
   <div class="panel panel-songlist">
-    <h2>楽曲一覧<span id="songCount" style="color:var(--text-dim);font-weight:400;"></span></h2>
+    <h2>楽曲一覧<span id="songCount" style="color:var(--text-dim);font-weight:400;"> (43曲)</span></h2>
     <div class="legend">
       <span><span class="dot" style="background:#ff4f8b"></span>メイン曲</span>
       <span><span class="dot" style="background:#7b6fa0"></span>変化球曲</span>
     </div>
-    <div class="song-list" id="songList"></div>
+    <div class="song-list" id="songList"><div style="margin-bottom: 14px;"><div style="font-size:11px;font-weight:700;color:#ff4f8b;letter-spacing:.05em;padding:4px 0 6px;display:flex;align-items:center;gap:6px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ff4f8b;display:inline-block;"></span>メイン曲
+    </div><div class="song-group"><div class="group-header">グッモーニン☆ジャンキー（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">グッモーニン☆ジャンキー</div>
+            <div class="song-meta">4:10</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">グッモーニン☆ジャンキー【ショート】</div>
+            <div class="song-meta">2:41</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">グッとくるサマー</div>
+            <div class="song-meta">4:15</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">グッとくるサマー【ショート】</div>
+            <div class="song-meta">3:17</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">触発エマージェンシー！（3バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">触発エマージェンシー！</div>
+            <div class="song-meta">3:26</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">ドラムループ/触発エマージェンシー！</div>
+            <div class="song-meta">3:46</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">ドラムループ/触発エマージェンシー！【ショート】</div>
+            <div class="song-meta">2:03</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">爆レスどきゅん♡（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">爆レスどきゅん♡</div>
+            <div class="song-meta">3:41</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">爆レスどきゅん♡【ショート】</div>
+            <div class="song-meta">2:32</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">やるときやるガール！<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">やるときやるガール！</div>
+            <div class="song-meta">3:42</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">オシャレマジック！（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">オシャレマジック！</div>
+            <div class="song-meta">4:10</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">オシャレマジック！【ショート】</div>
+            <div class="song-meta">2:14</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">開港☆あっぱーらんどまーく（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">開港☆あっぱーらんどまーく</div>
+            <div class="song-meta">3:37</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">開港☆あっぱーらんどまーく【ショート】</div>
+            <div class="song-meta">2:44</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">YEAH（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">YEAH!!</div>
+            <div class="song-meta">3:42</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">YEAH!!【ショート】</div>
+            <div class="song-meta">2:52</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">Anniversaryyyyy（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">Anniversaryyyyy!!!!!</div>
+            <div class="song-meta">3:41</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">Anniversaryyyyy!!!!!!【ショート】</div>
+            <div class="song-meta">1:26</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー【ショート＆ループ】<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">グッとくるサマー【ショート＆ループ】</div>
+            <div class="song-meta">3:47</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">DASH FOR MY DREAM<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">DASH FOR MY DREAM</div>
+            <div class="song-meta">4:08</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">アオハルタイムライド<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">アオハルタイムライド</div>
+            <div class="song-meta">3:45</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">Because it（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">Because it!!</div>
+            <div class="song-meta">3:25</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">ドラムループ/Because it!!</div>
+            <div class="song-meta">3:45</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">ラッキーラッシュ！<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">ラッキーラッシュ！</div>
+            <div class="song-meta">3:40</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">ショコラッて♡パティシエール<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">ショコラッて♡パティシエール</div>
+            <div class="song-meta">4:01</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">グッドジャーニー<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">グッドジャーニー</div>
+            <div class="song-meta">3:13</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">愛Sing<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">愛Sing!!</div>
+            <div class="song-meta">3:45</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">ラブちゅちゅ宇Chu<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">ラブちゅちゅ宇Chu!!</div>
+            <div class="song-meta">3:34</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">めっちゃいーじゃんぐる<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#ff4f8b"></span>
+          <span class="song-main">
+            <div class="song-title">めっちゃいーじゃんぐる</div>
+            <div class="song-meta">3:45</div>
+          </span>
+          
+        </div></div></div></div><div style="margin-bottom: 14px;"><div style="font-size:11px;font-weight:700;color:#7b6fa0;letter-spacing:.05em;padding:4px 0 6px;display:flex;align-items:center;gap:6px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:#7b6fa0;display:inline-block;"></span>変化球曲
+    </div><div class="song-group"><div class="group-header">Raise the Sail<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">Raise the Sail</div>
+            <div class="song-meta">3:52</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">URAMESHIYA<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">URAMESHIYA</div>
+            <div class="song-meta">4:14</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">NEW AGE（4バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">NEW AGE</div>
+            <div class="song-meta">4:08</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">NEW AGE【ショート】</div>
+            <div class="song-meta">2:12</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">イントロ/NEW AGE【ショート】</div>
+            <div class="song-meta">2:32</div>
+          </span>
+          
+        </div><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">イントロ/NEW AGE</div>
+            <div class="song-meta">4:28</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">youth<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">youth</div>
+            <div class="song-meta">3:41</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">THE MOMENT<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">THE MOMENT</div>
+            <div class="song-meta">3:28</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">BRAVE<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">BRAVE</div>
+            <div class="song-meta">3:17</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">ESCAPE<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">ESCAPE!</div>
+            <div class="song-meta">3:34</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">夢見がち Sound &amp; Beat<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">夢見がち Sound &amp; Beat</div>
+            <div class="song-meta">3:38</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">Bye Bye Little Girl<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">Bye Bye Little Girl</div>
+            <div class="song-meta">4:01</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">フロントクラクション<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">フロントクラクション</div>
+            <div class="song-meta">4:07</div>
+          </span>
+          
+        </div></div></div><div class="song-group"><div class="group-header">ストレリチア<span class="gline"></span></div><div class="group-rows"><div class="song-row">
+          <span class="freq-dot" style="background:#7b6fa0"></span>
+          <span class="song-main">
+            <div class="song-title">ストレリチア</div>
+            <div class="song-meta">4:23</div>
+          </span>
+          
+        </div></div></div></div></div>
   </div>
 
   <!-- 楽曲・設定エディター -->
-  <div class="panel" id="dbEditorPanel" style="display:none;">
+  <div class="panel" id="dbEditorPanel" style="display: block;">
     <h2 style="margin-top:0;">⚙ 楽曲・設定エディター</h2>
     <p style="color:var(--text-dim);font-size:12px;margin-bottom:12px;">変更はLocalStorageに保存されます。ページをリロードしても反映されます。「リセット」で初期データに戻せます。</p>
 
@@ -511,7 +829,7 @@
       <button class="btn secondary" id="dbResetBtn">↩ リセット（初期データに戻す）</button>
       <button class="btn" id="dbExportBtn" style="background:var(--green);color:#000;">⬇ HTMLをエクスポート</button>
     </div>
-    <div id="dbSaveMsg" style="font-size:11px;color:var(--green);margin-bottom:8px;display:none;"></div>
+    <div id="dbSaveMsg" style="font-size: 11px; color: var(--green); margin-bottom: 8px; display: block;">✓ 保存しました（次回ロード時も反映されます）</div>
 
     <div style="overflow-x:auto;">
       <table id="dbTable" style="width:100%;border-collapse:collapse;font-size:12px;">
@@ -527,7 +845,394 @@
             <th style="padding:6px 4px;text-align:center;white-space:nowrap;">削除</th>
           </tr>
         </thead>
-        <tbody id="dbTableBody"></tbody>
+        <tbody id="dbTableBody"><tr>
+      <td><input class="db-input" data-i="0" data-f="t" value="youth" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="0" data-f="time" value="3:41"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="0" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="0" data-f="light" value="エモロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="0" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="0" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="0" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="0">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="1" data-f="t" value="グッモーニン☆ジャンキー" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="1" data-f="time" value="4:10"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="1" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="1" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="1" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="1" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="1" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="1">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="2" data-f="t" value="グッとくるサマー" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="2" data-f="time" value="4:15"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="2" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="2" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="2" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="2" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="2" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="2">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="3" data-f="t" value="アオハルタイムライド" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="3" data-f="time" value="3:45"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="3" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="3" data-f="light" value="青春ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="3" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="3" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="3" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="3">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="4" data-f="t" value="オシャレマジック！" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="4" data-f="time" value="4:10"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="4" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="4" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="4" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="4" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="4" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="4">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="5" data-f="t" value="Raise the Sail" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="5" data-f="time" value="3:52"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="5" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="5" data-f="light" value="ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="5" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="5" data-f="henkyoku" checked=""></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="5" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="5">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="6" data-f="t" value="Because it!!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="6" data-f="time" value="3:25"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="6" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="6" data-f="light" value="ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="6" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="6" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="6" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="6">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="7" data-f="t" value="THE MOMENT" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="7" data-f="time" value="3:28"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="7" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="7" data-f="light" value="エモロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="7" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="7" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="7" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="7">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="8" data-f="t" value="ラッキーラッシュ！" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="8" data-f="time" value="3:40"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="8" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="8" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="8" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="8" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="8" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="8">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="9" data-f="t" value="触発エマージェンシー！" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="9" data-f="time" value="3:26"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="9" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="9" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="9" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="9" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="9" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="9">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="10" data-f="t" value="ショコラッて♡パティシエール" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="10" data-f="time" value="4:01"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="10" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="10" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="10" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="10" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="10" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="10">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="11" data-f="t" value="グッドジャーニー" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="11" data-f="time" value="3:13"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="11" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="11" data-f="light" value="青春ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="11" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="11" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="11" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="11">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="12" data-f="t" value="愛Sing!!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="12" data-f="time" value="3:45"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="12" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="12" data-f="light" value="ポップ、サビでミラーボール(あれば)" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="12" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="12" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="12" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="12">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="13" data-f="t" value="URAMESHIYA" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="13" data-f="time" value="4:14"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="13" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="13" data-f="light" value="クール、サビ：ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="13" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="13" data-f="henkyoku" checked=""></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="13" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="13">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="14" data-f="t" value="NEW AGE" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="14" data-f="time" value="4:08"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="14" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="14" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="14" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="14" data-f="henkyoku" checked=""></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="14" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="14">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="15" data-f="t" value="爆レスどきゅん♡" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="15" data-f="time" value="3:41"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="15" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="15" data-f="light" value="ポップ＆クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="15" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="15" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="15" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="15">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="16" data-f="t" value="ラブちゅちゅ宇Chu!!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="16" data-f="time" value="3:34"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="16" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="16" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="16" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="16" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="16" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="16">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="17" data-f="t" value="開港☆あっぱーらんどまーく" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="17" data-f="time" value="3:37"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="17" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="17" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="17" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="17" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="17" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="17">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="18" data-f="t" value="YEAH!!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="18" data-f="time" value="3:42"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="18" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="18" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="18" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="18" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="18" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="18">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="19" data-f="t" value="めっちゃいーじゃんぐる" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="19" data-f="time" value="3:45"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="19" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="19" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="19" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="19" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="19" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="19">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="20" data-f="t" value="BRAVE" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="20" data-f="time" value="3:17"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="20" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="20" data-f="light" value="ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="20" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="20" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="20" data-f="zeroprob" checked=""></td>
+      <td style="text-align:center;"><button class="db-del" data-i="20">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="21" data-f="t" value="ESCAPE!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="21" data-f="time" value="3:34"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="21" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="21" data-f="light" value="ロック、クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="21" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="21" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="21" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="21">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="22" data-f="t" value="Anniversaryyyyy!!!!!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="22" data-f="time" value="3:41"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="22" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="22" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="22" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="22" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="22" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="22">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="23" data-f="t" value="夢見がち Sound &amp; Beat" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="23" data-f="time" value="3:38"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="23" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="23" data-f="light" value="ポップ＆クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="23" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="23" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="23" data-f="zeroprob" checked=""></td>
+      <td style="text-align:center;"><button class="db-del" data-i="23">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="24" data-f="t" value="やるときやるガール！" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="24" data-f="time" value="3:42"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="24" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="24" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="24" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="24" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="24" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="24">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="25" data-f="t" value="Bye Bye Little Girl" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="25" data-f="time" value="4:01"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="25" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="25" data-f="light" value="ロック/ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="25" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="25" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="25" data-f="zeroprob" checked=""></td>
+      <td style="text-align:center;"><button class="db-del" data-i="25">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="26" data-f="t" value="フロントクラクション" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="26" data-f="time" value="4:07"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="26" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="26" data-f="light" value="ロック/ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="26" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="26" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="26" data-f="zeroprob" checked=""></td>
+      <td style="text-align:center;"><button class="db-del" data-i="26">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="27" data-f="t" value="ストレリチア" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="27" data-f="time" value="4:23"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="27" data-f="freq" value="1"></td>
+      <td><input class="db-input" data-i="27" data-f="light" value="ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="27" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="27" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="27" data-f="zeroprob" checked=""></td>
+      <td style="text-align:center;"><button class="db-del" data-i="27">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="28" data-f="t" value="ドラムループ/触発エマージェンシー！" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="28" data-f="time" value="3:46"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="28" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="28" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="28" data-f="onkyo" value="introにてドラム音をループさせます。その際煽りますのでリバーブを落としてください" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="28" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="28" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="28">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="29" data-f="t" value="ドラムループ/Because it!!" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="29" data-f="time" value="3:45"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="29" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="29" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="29" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="29" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="29" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="29">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="30" data-f="t" value="爆レスどきゅん♡【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="30" data-f="time" value="2:32"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="30" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="30" data-f="light" value="ポップ＆クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="30" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="30" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="30" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="30">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="31" data-f="t" value="グッモーニン☆ジャンキー【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="31" data-f="time" value="2:41"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="31" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="31" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="31" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="31" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="31" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="31">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="32" data-f="t" value="Anniversaryyyyy!!!!!!【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="32" data-f="time" value="1:26"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="32" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="32" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="32" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="32" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="32" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="32">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="33" data-f="t" value="グッとくるサマー【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="33" data-f="time" value="3:17"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="33" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="33" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="33" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="33" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="33" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="33">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="34" data-f="t" value="グッとくるサマー【ショート＆ループ】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="34" data-f="time" value="3:47"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="34" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="34" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="34" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="34" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="34" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="34">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="35" data-f="t" value="開港☆あっぱーらんどまーく【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="35" data-f="time" value="2:44"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="35" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="35" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="35" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="35" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="35" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="35">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="36" data-f="t" value="ドラムループ/触発エマージェンシー！【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="36" data-f="time" value="2:03"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="36" data-f="freq" value="5"></td>
+      <td><input class="db-input" data-i="36" data-f="light" value="クール、ロック" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="36" data-f="onkyo" value="introにてドラム音をループさせます。その際煽りますのでリバーブを落としてください" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="36" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="36" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="36">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="37" data-f="t" value="オシャレマジック！【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="37" data-f="time" value="2:14"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="37" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="37" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="37" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="37" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="37" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="37">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="38" data-f="t" value="NEW AGE【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="38" data-f="time" value="2:12"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="38" data-f="freq" value="2"></td>
+      <td><input class="db-input" data-i="38" data-f="light" value="ロック/クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="38" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="38" data-f="henkyoku" checked=""></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="38" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="38">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="39" data-f="t" value="イントロ/NEW AGE【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="39" data-f="time" value="2:32"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="39" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="39" data-f="light" value="ロック/クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="39" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="39" data-f="henkyoku" checked=""></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="39" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="39">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="40" data-f="t" value="イントロ/NEW AGE" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="40" data-f="time" value="4:28"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="40" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="40" data-f="light" value="ロック/クール" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="40" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="40" data-f="henkyoku" checked=""></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="40" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="40">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="41" data-f="t" value="YEAH!!【ショート】" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="41" data-f="time" value="2:52"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="41" data-f="freq" value="3"></td>
+      <td><input class="db-input" data-i="41" data-f="light" value="ポップ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="41" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="41" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="41" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="41">×</button></td>
+    </tr><tr>
+      <td><input class="db-input" data-i="42" data-f="t" value="DASH FOR MY DREAM" style="min-width:160px;"></td>
+      <td><input class="db-input db-time" data-i="42" data-f="time" value="4:08"></td>
+      <td><input class="db-input db-freq" type="number" min="1" max="5" data-i="42" data-f="freq" value="4"></td>
+      <td><input class="db-input" data-i="42" data-f="light" value="ロック:A/Bメロ ポップ→エモサビ" style="min-width:100px;"></td>
+      <td><input class="db-input" data-i="42" data-f="onkyo" value="" style="min-width:120px;"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="42" data-f="henkyoku"></td>
+      <td style="text-align:center;"><input type="checkbox" class="db-check" data-i="42" data-f="zeroprob"></td>
+      <td style="text-align:center;"><button class="db-del" data-i="42">×</button></td>
+    </tr></tbody>
       </table>
     </div>
   </div>
@@ -2135,5 +2840,6 @@ document.getElementById('dbResetBtn').addEventListener('click', ()=>{
 });
 </script>
 
-</body>
-</html>
+
+
+</body></html>

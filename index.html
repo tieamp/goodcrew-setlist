@@ -444,7 +444,7 @@
     </div>
     <div class="controls">
       <label style="flex:1;">音響・照明への要望（任意）
-        <textarea id="generalRequest" style="width:100%;min-height:50px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 9px;font-size:13px;font-family:inherit;resize:vertical;">中音のオケ/ボーカルは外音と同等のバランスでお願いします</textarea>
+        <textarea id="generalRequest" style="width:100%;min-height:50px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px 9px;font-size:13px;font-family:inherit;resize:vertical;"></textarea>
       </label>
     </div>
     <div class="actions" style="margin-top:0;">
@@ -471,32 +471,7 @@ MC
     <div class="title" style="">登場SE</div>
     <input type="text" class="mc-time-input" id="seTimeInput" value="1:00" title="時間を手入力(例:1:00)">
     <button class="toggle-fixed-btn active" id="toggleSEBtn">使用中</button>
-  </div><div class="slot" draggable="true" data-i="0">
-        <span class="drag-handle" title="長押しして並び替え">⠿</span>
-        <div class="idx">1</div>
-        <div class="title">グッとくるサマー</div>
-        
-        <select class="kikkake-select" data-i="0">
-          <option value="音先" selected="">音先</option>
-          <option value="曲振り">曲振り</option>
-          <option value="板付">板付</option>
-          <option value="続けて" class="cd-only" style="display:none;">続けて</option>
-          <option value="">―</option>
-        </select>
-        
-        <input type="text" class="track-input" data-i="0" placeholder="TR." value="" title="CDトラック番号" style="display: none;">
-        
-        <input type="text" class="onkyo-edit-input" data-i="0" placeholder="音響要望" value="" title="音響要望（編集可）">
-        
-        <input type="text" class="light-edit-input" data-i="0" placeholder="照明要望" value="ポップ" title="照明要望（編集可）">
-        
-        <input type="text" class="remark-input" data-i="0" placeholder="備考" value="">
-        
-        
-        
-        <div class="time">4:15</div>
-        <button data-i="0" title="削除">×</button>
-      </div><div class="slot fixed">
+  </div><div class="empty">出演時間を入力して自動生成するか、下の楽曲をクリックして追加してください</div><div class="slot fixed">
     <div class="idx">MC</div>
     <div class="title" style="">退場MC</div>
     <input type="text" class="mc-time-input" id="exitTimeInput" value="0:30" title="時間を手入力(例:0:30)">
@@ -504,8 +479,8 @@ MC
   </div></div>
 
     <div class="summary">
-      <div>目標 <b id="targetDisp">25:00</b> ／ 残り <span id="remain" class="ng">19:15</span></div>
-      <div class="total" id="totalTime">5:45</div>
+      <div>目標 <b id="targetDisp">25:00</b> ／ 残り <span id="remain" class="ng">23:30</span></div>
+      <div class="total" id="totalTime">1:30</div>
     </div>
 
     <div class="actions">
@@ -557,20 +532,20 @@ MC
             <div class="song-meta">2:41</div>
           </span>
           
-        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row used">
+        </div></div></div><div class="song-group"><div class="group-header">グッとくるサマー（2バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">
             <div class="song-title">グッとくるサマー</div>
             <div class="song-meta">4:15</div>
           </span>
-          <span class="badge-used">採用済</span>
-        </div><div class="song-row used">
+          
+        </div><div class="song-row">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">
             <div class="song-title">グッとくるサマー【ショート】</div>
             <div class="song-meta">3:17</div>
           </span>
-          <span class="badge-used">採用済</span>
+          
         </div></div></div><div class="song-group"><div class="group-header">触発エマージェンシー！（3バージョン）<span class="gline"></span></div><div class="group-rows"><div class="song-row">
           <span class="freq-dot" style="background:#ff4f8b"></span>
           <span class="song-main">

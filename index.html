@@ -2947,18 +2947,26 @@ renderAll();
    楽曲・設定エディター
    ============================================= */
 const DB_STORAGE_KEY = 'goodcrew_db_custom';
+const DB_VERSION = '20261031';
 
-// LocalStorageに保存されたDBがあれば起動時に適用
+// LocalStorageに保存されたDBがあれば起動時に適用（バージョンが古ければ無視）
 (function applyCustomDB(){
   try{
     const saved = localStorage.getItem(DB_STORAGE_KEY);
     if(!saved) return;
     const parsed = JSON.parse(saved);
     if(!parsed || !parsed.songs) return;
+    // バージョンが違う場合はlocalStorageを破棄して最新DBを使う
+    if(parsed.dbVersion !== DB_VERSION){
+      localStorage.removeItem(DB_STORAGE_KEY);
+      return;
+    }
     DB.splice(0, DB.length, ...parsed.songs);
     if(parsed.henkyoku){ HENKYOKU_BASE.clear(); parsed.henkyoku.forEach(b=> HENKYOKU_BASE.add(b)); }
     if(parsed.zeroProb){ ZERO_PROB_BASE.clear(); parsed.zeroProb.forEach(b=> ZERO_PROB_BASE.add(b)); }
     if(parsed.defaultRequest != null){ const el = document.getElementById('generalRequest'); if(el) el.value = parsed.defaultRequest; }
+    if(parsed.logoImage){ window.LOGO_IMG = parsed.logoImage; }
+    if(parsed.micImage){ window.MIC_IMG = parsed.micImage; }
     renderAll();
   }catch(e){}
 })();
@@ -3078,6 +3086,7 @@ document.getElementById('dbSaveBtn').addEventListener('click', ()=>{
     document.getElementById('generalRequest').value = reqVal;
 
     const data = {
+      dbVersion: DB_VERSION,
       songs: DB.map(s=>({...s})),
       henkyoku: [...HENKYOKU_BASE],
       zeroProb: [...ZERO_PROB_BASE],
